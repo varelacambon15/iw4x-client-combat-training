@@ -1,5 +1,6 @@
 // IW4x's macros for the Create a Class weapon popups, with one step more for Advanced Combat Training: when you
-// have Supply Drop variants of the weapon you choose, popup_sd_variant opens first to choose which one to equip.
+// have Supply Drop variants of the weapon you choose, popup_sd_variant opens first to choose which one to equip; and a
+// weapon you have a variant of can be chosen even before its level (as in Advanced Warfare).
 #define CAC_PRIMARY_WEAPON(itemNum,weaponArg) \
 		itemDef \
 		{ \
@@ -16,7 +17,7 @@
 			textalign 4 \
 			textalignx 68 \
 			textscale 0.375 \
-			disabled when ( !isitemunlocked( weaponArg ) ) \
+			disabled when ( !isitemunlocked( weaponArg ) && dvarint( "sd_own_" + weaponArg ) == 0 ) \
 			exp text ( "@" + tablelookup( "mp/statsTable.csv" , 4 , weaponArg , 3 ) ) \
 			execKeyInt 168 \
 			{ \
@@ -202,7 +203,7 @@
 			forecolor 1 1 1 1 \
 			background "specialty_locked" \
 			textscale 0.55 \
-			visible when ( ( isitemunlocked( weaponArg ) == 0 ) ) \
+			visible when ( ( isitemunlocked( weaponArg ) == 0 && dvarint( "sd_own_" + weaponArg ) == 0 ) ) \
 		}
 
 #define CAC_SECONDARY_WEAPON(itemNum,weaponArg) \
@@ -221,7 +222,7 @@
 			textalign 4 \
 			textalignx 68 \
 			textscale 0.375 \
-			disabled when ( !isitemunlocked( weaponArg ) ) \
+			disabled when ( !isitemunlocked( weaponArg ) && dvarint( "sd_own_" + weaponArg ) == 0 ) \
 			exp text ( "@" + tablelookup( "mp/statsTable.csv" , 4 , weaponArg , 3 ) ) \
 			execKeyInt 168 \
 			{ \
@@ -407,7 +408,7 @@
 			forecolor 1 1 1 1 \
 			background "specialty_locked" \
 			textscale 0.55 \
-			visible when ( ( isitemunlocked( weaponArg ) == 0 ) ) \
+			visible when ( ( isitemunlocked( weaponArg ) == 0 && dvarint( "sd_own_" + weaponArg ) == 0 ) ) \
 		}
 		
 #define CAC_SECONDARY_WEAPON_W_GOLD(itemNum,weaponArg) \
@@ -426,7 +427,7 @@
 			textalign 4 \
 			textalignx 68 \
 			textscale 0.375 \
-			disabled when ( !isitemunlocked( weaponArg ) ) \
+			disabled when ( !isitemunlocked( weaponArg ) && dvarint( "sd_own_" + weaponArg ) == 0 ) \
 			exp text ( "@" + tablelookup( "mp/statsTable.csv" , 4 , weaponArg , 3 ) ) \
 			execKeyInt 168 \
 			{ \
@@ -602,7 +603,7 @@
 			forecolor 1 1 1 1 \
 			background "specialty_locked" \
 			textscale 0.55 \
-			visible when ( ( isitemunlocked( weaponArg ) == 0 ) ) \
+			visible when ( ( isitemunlocked( weaponArg ) == 0 && dvarint( "sd_own_" + weaponArg ) == 0 ) ) \
 		}
 		
 #define CLASS_FOCUS(weaponArg) if ( getplayerdata( "customClasses" , localvarint( "classIndex" ) , "weaponSetups" , 0 , "weapon" ) == weaponArg ) { setfocus "cac_weapon_" ## weaponArg; }

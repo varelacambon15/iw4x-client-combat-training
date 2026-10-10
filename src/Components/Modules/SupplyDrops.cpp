@@ -1032,6 +1032,12 @@ namespace Components
         Game::Scr_AddInt(item ? item->Mod(type) : 0);
       });
 
+      GSC::Script::AddFunction("SDOwns", [] // gsc: SDOwns(<weapon ref>) -> 1 if you have a variant of it (it then counts as unlocked)
+      {
+        Load();
+        Game::Scr_AddInt(CountFor(Game::Scr_GetString(0)) > 0 ? 1 : 0);
+      });
+
       GSC::Script::AddFunction("SDVariantName", [] // gsc: SDVariantName(<weapon ref>) -> "M4A1 'Ember' (Elite)" or ""
       {
         Load();

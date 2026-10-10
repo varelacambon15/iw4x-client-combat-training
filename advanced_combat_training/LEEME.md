@@ -52,6 +52,8 @@ el icono de "nuevo" cuando tienes cajas sin abrir):
   rareza, más ventajas; a veces con una desventaja. Las Advanced traen siempre una Professional o mejor.
 - **Armory:** tus armas con variantes; en cada una eliges cuál equipar o la desguazas (**Salvage**) por Credits. También
   puedes desguazar de golpe todas las Enlisted o Professional que no tengas equipadas.
+- **Armas bloqueadas:** si te toca una variante de un arma que aún no has desbloqueado por nivel, esa arma queda
+  disponible para ti desde ya, como en Advanced Warfare.
 - **Crear una clase:** al elegir un arma de la que tienes variantes, sale un paso más para escoger la variante (o
   ninguna) antes de los accesorios. Va una variante por arma y vale para todas las clases.
 - **Store y contratos:** en la misma pantalla compras Supply Drops con Credits y ves tus contratos (3 diarios y 1
