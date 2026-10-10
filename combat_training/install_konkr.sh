@@ -51,7 +51,7 @@ STEAM_GAME=0
 case "$GAME" in */steamapps/common/*) STEAM_GAME=1 ;; esac
 
 # --- IW4x: los archivos de la comunidad, si aún no están -----------------------------------------------------------
-if [ ! -f "$GAME/iw4x.exe" ] || [ ! -d "$GAME/iw4x" ]; then
+if ! ls "$GAME" | grep -qix "iw4x.exe"; then
     say "Descargando IW4x (archivos del juego de la comunidad)..."
     tmp="$(mktemp -d)"
     trap 'rm -rf "$tmp"' EXIT
