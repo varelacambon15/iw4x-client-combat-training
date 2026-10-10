@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Combat Training: instala IW4x con Combat Training en el MW2 (2009) de Steam, en SteamOS (KONKR Pocket FIT,
 # Steam Deck o cualquier Linux con Steam). Ejecutar desde la carpeta descomprimida:
-#     bash install_konkr.sh
+#     bash install_konkr.sh                      (busca el juego en tus bibliotecas de Steam)
+#     bash install_konkr.sh "/ruta/al/juego"     (el juego está en otra carpeta)
 set -euo pipefail
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
@@ -14,7 +15,16 @@ fail() { printf '\033[1;31mError:\033[0m %s\n' "$*" >&2; exit 1; }
 
 [ -f "$HERE/iw4x.dll" ] && [ -d "$HERE/mods/combat_training" ] || fail "ejecuta este script desde la carpeta CombatTraining descomprimida"
 
-# --- La carpeta del juego: en cualquiera de las bibliotecas de Steam ---------------------------------------------
+# --- La carpeta del juego: la indicada, o en cualquiera de las bibliotecas de Steam -------------------------------
+GAME=""
+if [ $# -ge 1 ]; then
+    GAME="${1%/}"
+    [ -d "$GAME" ] || fail "no existe la carpeta '$GAME'"
+    [ -f "$GAME/iw4mp.exe" ] || [ -f "$GAME/iw4x.exe" ] || fail "en '$GAME' no están ni iw4mp.exe ni iw4x.exe: tiene que ser la carpeta del MW2 (2009)"
+    [ -d "$GAME/main" ] || fail "en '$GAME' falta la carpeta 'main' con los archivos del juego: IW4x necesita el MW2 completo de Steam, no solo los archivos de IW4x"
+fi
+
+if [ -z "$GAME" ]; then
 say "Buscando Modern Warfare 2 en tus bibliotecas de Steam..."
 libraries=()
 for root in "$HOME/.local/share/Steam" "$HOME/.steam/steam" "$HOME/.steam/root"; do
@@ -34,8 +44,11 @@ for lib in "${libraries[@]}"; do
         break
     fi
 done
-[ -n "$GAME" ] || fail "no encuentro '$GAME_DIR_NAME' con iw4mp.exe. Instala el MW2 (2009) en Steam (incluido el multijugador) y vuelve a ejecutar el script."
-say "Juego encontrado en: $GAME"
+[ -n "$GAME" ] || fail "no encuentro '$GAME_DIR_NAME' con iw4mp.exe. Instala el MW2 (2009) en Steam (incluido el multijugador), o indica la carpeta: bash install_konkr.sh \"/ruta/al/juego\""
+fi
+say "Juego en: $GAME"
+STEAM_GAME=0
+case "$GAME" in */steamapps/common/*) STEAM_GAME=1 ;; esac
 
 # --- IW4x: los archivos de la comunidad, si aún no están -----------------------------------------------------------
 if [ ! -f "$GAME/iw4x.exe" ] || [ ! -d "$GAME/iw4x" ]; then
@@ -73,17 +86,31 @@ say "Combat Training instalado"
 
 # --- Opciones de lanzamiento ---------------------------------------------------------------------------------------
 echo
-say "Último paso, en Steam:"
-echo "   1. Biblioteca -> Call of Duty: Modern Warfare 2 - Multiplayer -> Propiedades -> General."
-echo "   2. En 'Opciones de lanzamiento' pega esta línea:"
-echo
-echo "      $LAUNCH_OPTIONS"
-echo
-echo "   (Si usas Konkr Tweaks, pon ~/.local/bin/kt-run delante de bash.)"
+if [ "$STEAM_GAME" = 1 ]; then
+    say "Último paso, en Steam:"
+    echo "   1. Biblioteca -> Call of Duty: Modern Warfare 2 - Multiplayer -> Propiedades -> General."
+    echo "   2. En 'Opciones de lanzamiento' pega esta línea:"
+    echo
+    echo "      $LAUNCH_OPTIONS"
+    echo
+    echo "   (Si usas Konkr Tweaks, pon ~/.local/bin/kt-run delante de bash.)"
+    copy="$LAUNCH_OPTIONS"
+else
+    say "Último paso, en Steam (el juego no está en una biblioteca de Steam, así que se añade aparte):"
+    echo "   1. Juegos -> Añadir un juego que no es de Steam -> Explorar, y elige:"
+    echo "      $GAME/iw4x.exe"
+    echo "   2. En el juego añadido: Propiedades -> Compatibilidad -> Forzar una herramienta de compatibilidad -> Proton."
+    echo "   3. En Propiedades -> General -> 'Opciones de lanzamiento' pega:"
+    echo
+    echo "      +set fs_game mods/combat_training"
+    echo
+    echo "   Steam tiene que estar abierto y con el MW2 en tu cuenta: IW4x lo comprueba al arrancar."
+    copy="+set fs_game mods/combat_training"
+fi
 if command -v wl-copy >/dev/null 2>&1; then
-    printf '%s' "$LAUNCH_OPTIONS" | wl-copy && echo "   La línea ya está copiada en el portapapeles."
+    printf '%s' "$copy" | wl-copy && echo "   Las opciones de lanzamiento ya están copiadas en el portapapeles."
 elif command -v xclip >/dev/null 2>&1; then
-    printf '%s' "$LAUNCH_OPTIONS" | xclip -selection clipboard && echo "   La línea ya está copiada en el portapapeles."
+    printf '%s' "$copy" | xclip -selection clipboard && echo "   Las opciones de lanzamiento ya están copiadas en el portapapeles."
 fi
 echo
-echo "   Al abrir el multijugador verás COMBAT TRAINING arriba del menú principal."
+echo "   Al abrir el juego verás COMBAT TRAINING arriba del menú principal."
