@@ -57,7 +57,8 @@ jobs:
             New-Item -ItemType Directory -Force -Path $mod | Out-Null
             Copy-Item build/bin/Win32/Release/iw4x.dll $out/
             Copy-Item -Recurse "$($p.Source)/*" $mod/
-            Copy-Item -Recurse botwarfare/maps $mod/
+            New-Item -ItemType Directory -Force -Path "$mod/maps" | Out-Null
+            Copy-Item -Recurse botwarfare/maps/* "$mod/maps/" -Force
             Copy-Item -Recurse botwarfare/scripts/* $mod/scripts/ -Force
             Copy-Item -Recurse botwarfare/scriptdata $mod/
             Copy-Item combat_training/install_konkr.sh $out/
