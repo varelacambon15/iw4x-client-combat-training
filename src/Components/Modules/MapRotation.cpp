@@ -1,6 +1,7 @@
 #include "MapRotation.hpp"
 #include "Events.hpp"
 #include "Party.hpp"
+#include "CombatTraining.hpp"
 
 namespace Components
 {
@@ -374,6 +375,9 @@ namespace Components
     }
 
     Logger::Print(Game::CON_CHANNEL_SERVER, "Rotating map...\n");
+
+    // Combat Training queues the next match of its playlist (through sv_mapRotationCurrent, below)
+    CombatTraining::PrepareRotation();
 
     // This takes priority because of backwards compatibility
     const std::string mapRotationCurrent = (*Game::sv_mapRotationCurrent)->current.string;

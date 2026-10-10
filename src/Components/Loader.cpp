@@ -77,6 +77,7 @@
 
 #include "Modules/BotLib/lPrecomp.hpp"
 #include "Modules/ViewModelFxSetup.hpp"
+#include "Modules/CombatTraining.hpp"
 
 namespace Components
 {
@@ -116,6 +117,7 @@ namespace Components
     Register(new AssetHandler());
     Register(new Bans());
     Register(new Bots());
+    Register(new CombatTraining());
     Register(new Branding());
     Register(new Bullet());
     Register(new CardTitles());

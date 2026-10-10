@@ -1,0 +1,76 @@
+name: Combat Training
+
+# Builds iw4x.dll with Combat Training and packages it with the mod (combat_training/mod) and Bot Warfare:
+# a release named "Combat Training" (tag combat-training-latest) holds the zip to install.
+
+on:
+  push:
+    branches:
+      - "main"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: combat-training-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build and package
+    runs-on: windows-2022
+    steps:
+      - name: Check out files
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+          fetch-depth: 0
+          lfs: false
+
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Generate project files
+        run: tools/premake5 vs2022
+
+      - name: Set up problem matching
+        uses: ammaraskar/msvc-problem-matcher@master
+
+      - name: Build Release binaries
+        run: msbuild /m /v:minimal /p:Configuration=Release /p:Platform=Win32 build/iw4x.sln
+
+      - name: Fetch Bot Warfare
+        run: git clone --depth 1 https://github.com/ineedbots/iw4_bot_warfare.git botwarfare
+
+      - name: Assemble package
+        shell: pwsh
+        run: |
+          $out = "package/CombatTraining"
+          $mod = "$out/mods/combat_training"
+          New-Item -ItemType Directory -Force -Path $mod | Out-Null
+          Copy-Item build/bin/Win32/Release/iw4x.dll $out/
+          Copy-Item -Recurse combat_training/mod/* $mod/
+          Copy-Item -Recurse botwarfare/maps $mod/
+          Copy-Item -Recurse botwarfare/scripts/* $mod/scripts/ -Force
+          Copy-Item -Recurse botwarfare/scriptdata $mod/
+          Copy-Item combat_training/install_konkr.sh $out/
+          Copy-Item combat_training/LEEME.md $out/
+          Compress-Archive -Path $out -DestinationPath CombatTraining.zip -Force
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: CombatTraining
+          path: CombatTraining.zip
+
+      - name: Publish release
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: combat-training-latest
+          name: Combat Training
+          body: |
+            Build ${{ github.sha }}. Download CombatTraining.zip and follow LEEME.md inside.
+          files: CombatTraining.zip
+          make_latest: true
