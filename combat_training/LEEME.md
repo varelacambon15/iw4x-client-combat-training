@@ -32,7 +32,8 @@ Copia `iw4x.dll` y la carpeta `mods` en la carpeta del juego (con IW4x ya instal
 ## Jugar
 
 En el menú principal, **COMBAT TRAINING** → elige una lista de juego. La partida empieza sola, y al terminar verás
-cuál es la siguiente: el juego pasa de una a otra como en el online. Para dejarlo, sal al menú desde la pausa.
+cuál es la siguiente: el juego pasa de una a otra como en el online. Para dejarlo, en la pausa elige **End Game**
+(Terminar partida) y vuelves al menú principal.
 
 - Tu rango, clases, retos y prestigio son los de tu perfil de IW4x.
 - Los bots usan un nivel parecido al tuyo. Si ganas con facilidad mejoran, si lo pasas mal aflojan.

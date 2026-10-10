@@ -62,6 +62,20 @@ ct_on_player_connect()
 			continue;
 
 		player thread ct_player();
+		player thread ct_watch_end_game();
+	}
+}
+
+// "End Game" in the pause menu: back to the main menu afterwards, not on to the next match of the playlist
+ct_watch_end_game()
+{
+	self endon( "disconnect" );
+
+	for ( ;; )
+	{
+		self waittill( "menuresponse", menu, response );
+		if ( response == "endround" || response == "endgame" )
+			setdvar( "ct_quit", 1 );
 	}
 }
 

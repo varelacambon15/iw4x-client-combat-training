@@ -32,7 +32,8 @@ Copia `iw4x.dll` y la carpeta `mods` en la carpeta del juego (con IW4x ya instal
 ## Jugar
 
 En el menú principal, **ADVANCED COMBAT TRAINING** → elige una lista de juego. La partida empieza sola, y al terminar verás
-cuál es la siguiente: el juego pasa de una a otra como en el online. Para dejarlo, sal al menú desde la pausa.
+cuál es la siguiente: el juego pasa de una a otra como en el online. Para dejarlo, en la pausa elige **End Game**
+(Terminar partida) y vuelves al menú principal.
 
 - Tu rango, clases, retos y prestigio son los de tu perfil de IW4x.
 - Los bots usan un nivel parecido al tuyo. Si ganas con facilidad mejoran, si lo pasas mal aflojan.
@@ -41,19 +42,24 @@ cuál es la siguiente: el juego pasa de una a otra como en el online. Para dejar
 
 ## Supply Drops y variantes de armas
 
-Lo nuevo frente a Combat Training. En partida, **Action Slot 2** (cruceta abajo; tecla 5 en teclado) abre el menú de
-Supply Drops. Te mueves con adelante/atrás (stick izquierdo), eliges con saltar (A) y vuelves con agacharse (B).
+Lo nuevo frente a Combat Training, como en Advanced Warfare. Todo está en el menú principal, en **SUPPLY DROPS** (lleva
+el icono de "nuevo" cuando tienes cajas sin abrir):
 
+- **Abrir:** la caja se abre con su animación y salen tres variantes, la mejor al final, cada una en su tarjeta con la
+  foto del arma, la rareza (**Enlisted** verde, **Professional** azul, **Elite** dorada) y sus estadísticas: las barras
+  del juego con lo que la variante sube (verde) o baja (rojo), y la lista de cambios.
+- **Qué cambian:** daño (general, a corta o a larga distancia), daño en la cabeza, movilidad y munición de reserva. Más
+  rareza, más ventajas; a veces con una desventaja. Las Advanced traen siempre una Professional o mejor.
+- **Armory:** tus armas con variantes; en cada una eliges cuál equipar o la desguazas (**Salvage**) por Credits. También
+  puedes desguazar de golpe todas las Enlisted o Professional que no tengas equipadas.
+- **Crear una clase:** al elegir un arma de la que tienes variantes, sale un paso más para escoger la variante (o
+  ninguna) antes de los accesorios. Va una variante por arma y vale para todas las clases.
+- **Store y contratos:** en la misma pantalla compras Supply Drops con Credits y ves tus contratos (3 diarios y 1
+  semanal) con su progreso.
 - **Cómo se consiguen:** una por cada 30 minutos jugados, una por nivel, dos Advanced por prestigio, una por la primera
-  victoria del día y por los contratos (3 diarios y 1 semanal, que da una Advanced). Empiezas con una.
-- **Qué traen:** variantes de armas con rareza **Enlisted**, **Professional** o **Elite**, un nombre y cambios al azar
-  en daño (general, a corta o a larga distancia), daño en la cabeza, movilidad y munición de reserva. Más rareza, más
-  ventajas; a veces con una desventaja. Las Advanced garantizan una Professional o mejor.
-- **Armory:** equipa una variante y se aplica siempre que lleves esa arma, en cualquier clase y con cualquier accesorio.
-  Las que no quieras, desguázalas (**Salvage**) por Credits.
-- **Store:** con Credits compras Supply Drops normales o Advanced. También ganas Credits al final de cada partida.
+  victoria del día y por los contratos. Credits al final de cada partida, al abrir cajas y al desguazar. Empiezas con una.
 - **Tu progreso** se guarda en `players/supply_drops/profile.txt`, en la carpeta del juego.
-- **Ajustes:** el ritmo y los precios están en `mods/advanced_combat_training/scripts/mp/sd_config.gsc`.
+- **Ajustes:** el ritmo, las probabilidades y los precios están en `mods/advanced_combat_training/supply_drops/config.txt`.
 
 ## Ajustes
 

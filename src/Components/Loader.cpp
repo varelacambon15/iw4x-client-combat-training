@@ -78,6 +78,7 @@
 #include "Modules/BotLib/lPrecomp.hpp"
 #include "Modules/ViewModelFxSetup.hpp"
 #include "Modules/CombatTraining.hpp"
+#include "Modules/SupplyDrops.hpp"
 
 namespace Components
 {
@@ -118,6 +119,7 @@ namespace Components
     Register(new Bans());
     Register(new Bots());
     Register(new CombatTraining());
+    Register(new SupplyDrops());
     Register(new Branding());
     Register(new Bullet());
     Register(new CardTitles());

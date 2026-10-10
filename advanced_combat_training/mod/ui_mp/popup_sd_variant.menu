@@ -1,0 +1,177 @@
+#include "ui/menudef.h"
+#include "ui_mp/main.inc"
+#include "ui_mp/sd.inc"
+
+// Create a Class: the Supply Drop variant of the weapon just chosen (emz_macros.inc opens this popup after running
+// "sd_cac" for sd_cac_ref). The variant is equipped on the weapon in every class; then Create a Class goes on as
+// usual, to the attachments or the camo.
+
+// After the choice: what the weapon popup would have opened (ui_sd_cac_ref the weapon, ui_sd_cac_slot 0 primary / 1 secondary)
+#define SD_CAC_CONTINUE \
+	if ( localvarint( "ui_sd_cac_slot" ) == 0 ) \
+	{ \
+		if ( ( tablelookup( "mp/statsTable.csv" , 4 , localvarstring( "ui_sd_cac_ref" ) , 11 ) != "" ) ) \
+		{ \
+			if ( getplayerdata( "customClasses" , localvarint( "classIndex" ) , "perks" , 1 ) == "specialty_bling" ) \
+			{ \
+				open "popup_primary_attachments_bling"; \
+			} \
+			else \
+			{ \
+				open "popup_primary_attachments"; \
+			} \
+		} \
+		else \
+		{ \
+			open "popup_cac_primary_camo"; \
+		} \
+	} \
+	else \
+	{ \
+		if ( ( tablelookup( "mp/statsTable.csv" , 4 , localvarstring( "ui_sd_cac_ref" ) , 11 ) != "" ) ) \
+		{ \
+			if ( getplayerdata( "customClasses" , localvarint( "classIndex" ) , "perks" , 1 ) == "specialty_bling" && isitemunlocked( "specialty_secondarybling" ) ) \
+			{ \
+				open "popup_secondary_attachments_bling"; \
+			} \
+			else \
+			{ \
+				open "popup_secondary_attachments"; \
+			} \
+		} \
+		else \
+		{ \
+			close "popup_cac_weapon_primary"; \
+			close "popup_cac_weapon_secondary"; \
+			close "popup_cac_handgun_secondary"; \
+			close "popup_cac_machinePistols_secondary"; \
+			close "popup_cac_shotgun_secondary"; \
+			close "popup_cac_assault_primary"; \
+			close "popup_cac_SMG_primary"; \
+			close "popup_cac_LMG_primary"; \
+			close "popup_cac_sniper_primary"; \
+		} \
+	}
+
+#define SD_CAC_ROW(itemNum, buttonName, P, pickCmd, focusCmd) \
+	itemDef \
+	{ \
+		name				buttonName \
+		rect				-64 (4 + (itemNum * 20)) 336 20 1 1 \
+		group				"mw2_popup_button" \
+		style				1 \
+		forecolor			1 1 1 1 \
+		disablecolor		0.6 0.55 0.55 1 \
+		background			"popup_button_selection_bar_short" \
+		type				1 \
+		textfont			3 \
+		textalign			4 \
+		textalignx			68 \
+		textscale			0.375 \
+		visible				when( dvarstring( P + "_name" ) != "" ) \
+		exp					text ( dvarstring( P + "_name" ) ) \
+		action \
+		{ \
+			play "mouse_click"; \
+			execnow pickCmd; \
+			close self; \
+			SD_CAC_CONTINUE \
+		} \
+		onFocus \
+		{ \
+			play "mouse_over"; \
+			setItemColor self backcolor 0 0 0 1; \
+			setLocalVarBool "ui_popupAButton" ( 1 ); \
+			execnow focusCmd; \
+		} \
+		leaveFocus \
+		{ \
+			setItemColor self backcolor 1 1 1 0; \
+			setLocalVarBool "ui_popupAButton" ( 0 ); \
+		} \
+	} \
+	itemDef \
+	{ \
+		rect				196 (8 + (itemNum * 20)) 70 14 1 1 \
+		forecolor			0.45 1 0.45 1 \
+		textfont			3 \
+		textscale			0.28 \
+		textalign			6 \
+		decoration \
+		text				"EQUIPPED" \
+		visible				when( dvarstring( P + "_name" ) != "" && dvarint( P + "_eq" ) ) \
+	}
+
+{
+	menuDef
+	{
+		name "popup_sd_variant"
+		rect 0 0 854 204 1 1
+		style 1
+		popup
+		forecolor 1 1 1 0
+		backcolor 1 1 1 0
+		background "white"
+		focuscolor 1 1 1 1
+		fadeCycle 1
+		fadeClamp 1
+		fadeAmount 0.1
+		outOfBoundsClick
+		visible when ( localvarint( "ui_tabDepth" ) == localvarint( "ui_popup_sd_variant_tabDepth" ) )
+		exp rect y ( localvarfloat( "ui_popupYPos" ) + localvarint( "ui_tabDepth" ) * 20 )
+		onOpen
+		{
+			setLocalVarInt "ui_tabDepth" ( localvarint( "ui_tabDepth" ) + 1 );
+			setLocalVarInt "ui_popup_sd_variant_tabDepth" ( localvarint( "ui_tabDepth" ) );
+			if ( dvarint( "sd_cv0_eq" ) == 1 )
+			{
+				setfocus "sd_cv_0";
+				execnow "sd_cfocus 0";
+			}
+			else
+			{
+				setfocus "sd_cv_1";
+				execnow "sd_cfocus 1";
+			}
+		}
+		onClose
+		{
+			setLocalVarInt "ui_tabDepth" ( localvarint( "ui_tabDepth" ) - 1 );
+		}
+		onEsc
+		{
+			close self;
+		}
+
+		#define ITEMNUM dvarint( "sd_cv_count" )
+		#include "ui_mp/popup_cac_background.inc"
+
+		// The title above the list
+		itemDef
+		{
+			rect -64 -20 336 18 1 1
+			decoration
+			visible 1
+			forecolor 1 0.75 0.2 1
+			textfont 3
+			textalign 4
+			textalignx 68
+			textscale 0.3
+			text "SUPPLY DROP VARIANT"
+		}
+
+		SD_CAC_ROW(0, "sd_cv_0", "sd_cv0", "sd_cpick 0", "sd_cfocus 0")
+		SD_CAC_ROW(1, "sd_cv_1", "sd_cv1", "sd_cpick 1", "sd_cfocus 1")
+		SD_CAC_ROW(2, "sd_cv_2", "sd_cv2", "sd_cpick 2", "sd_cfocus 2")
+		SD_CAC_ROW(3, "sd_cv_3", "sd_cv3", "sd_cpick 3", "sd_cfocus 3")
+		SD_CAC_ROW(4, "sd_cv_4", "sd_cv4", "sd_cpick 4", "sd_cfocus 4")
+		SD_CAC_ROW(5, "sd_cv_5", "sd_cv5", "sd_cpick 5", "sd_cfocus 5")
+		SD_CAC_ROW(6, "sd_cv_6", "sd_cv6", "sd_cpick 6", "sd_cfocus 6")
+		SD_CAC_ROW(7, "sd_cv_7", "sd_cv7", "sd_cpick 7", "sd_cfocus 7")
+		SD_CAC_ROW(8, "sd_cv_8", "sd_cv8", "sd_cpick 8", "sd_cfocus 8")
+		SD_CAC_ROW(9, "sd_cv_9", "sd_cv9", "sd_cpick 9", "sd_cfocus 9")
+
+		// The card of the variant in focus, where the stock popups show the weapon
+		SD_CARD("sd_cf", (0 - 56), (0 - 20), 180, 2, 1, 1, 0, 1)
+	}
+}

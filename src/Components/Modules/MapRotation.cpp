@@ -376,7 +376,12 @@ namespace Components
 
     Logger::Print(Game::CON_CHANNEL_SERVER, "Rotating map...\n");
 
-    // Combat Training queues the next match of its playlist (through sv_mapRotationCurrent, below)
+    // Combat Training: back to the menu when the player ended the match; otherwise the next match of its playlist
+    // (through sv_mapRotationCurrent, below)
+    if (CombatTraining::ConsumeQuit())
+    {
+      return;
+    }
     CombatTraining::PrepareRotation();
 
     // This takes priority because of backwards compatibility

@@ -18,6 +18,9 @@ namespace Components
     // Called by MapRotation before it rotates: queues the next mode and map of the playlist.
     static void PrepareRotation();
 
+    // Called by MapRotation first: true when the player ended the match, and Combat Training is then stopped.
+    [[nodiscard]] static bool ConsumeQuit();
+
   private:
     struct Playlist
     {
@@ -33,6 +36,7 @@ namespace Components
     static Dvar::Var CurrentPlaylist;
     static Dvar::Var NextMap;
     static Dvar::Var NextGametype;
+    static Dvar::Var Quit;
 
     static std::vector<std::string> RecentMaps;
 
@@ -44,7 +48,6 @@ namespace Components
     static void QueueNext(const Playlist& playlist, const std::string& current);
     static void RememberMap(const std::string& map);
 
-    static void AddSupplyDropFunctions();
 
     static void Start(const std::string& id);
     static void Stop();

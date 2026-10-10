@@ -1,0 +1,50 @@
+// Advanced Combat Training: Supply Drops settings. Change the numbers to tune the pace and the economy.
+// (Read when you open SUPPLY DROPS in the main menu.)
+
+// --- Earning drops ---
+minutes_per_drop = 30              // minutes played in matches for a Supply Drop
+drops_per_level = 1                // Supply Drops for each level gained
+advanced_per_prestige = 2          // Advanced Supply Drops for each prestige
+first_win_of_day_drops = 1         // Supply Drops for the first win of the day
+daily_contracts = 3                // daily contracts, a Supply Drop each
+weekly_contract_advanced = 1       // the weekly contract gives this many Advanced Supply Drops
+
+// --- Credits ---
+salvage_enlisted = 10
+salvage_professional = 30
+salvage_elite = 100
+match_credits_top = 15             // end of a match, top of the scoreboard
+match_credits_middle = 8
+match_credits_bottom = 4
+price_drop = 120                   // Store
+price_advanced = 350
+
+// --- What comes out of a drop ---
+items_per_drop = 3                 // variants in each drop (1 to 3)
+bonus_credits_per_drop = 10
+
+// Chance of each rarity, in percent. An Advanced drop always has one Professional or better.
+chance_elite = 8
+chance_professional = 30
+chance_elite_advanced = 25
+chance_professional_advanced = 75
+
+// Each rarity: how many advantages, their size in percent, and the chance and size of a drawback
+advantages_enlisted = 1
+advantages_professional = 2
+advantages_elite = 3
+advantage_min_enlisted = 3
+advantage_max_enlisted = 6
+advantage_min_professional = 5
+advantage_max_professional = 10
+advantage_min_elite = 8
+advantage_max_elite = 14
+drawback_chance_enlisted = 50
+drawback_chance_professional = 100
+drawback_chance_elite = 50
+drawback_min_enlisted = 2
+drawback_max_enlisted = 4
+drawback_min_professional = 3
+drawback_max_professional = 6
+drawback_min_elite = 3
+drawback_max_elite = 6

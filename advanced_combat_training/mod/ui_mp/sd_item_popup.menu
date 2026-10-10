@@ -1,0 +1,59 @@
+#include "ui/menudef.h"
+#include "ui_mp/main.inc"
+#include "ui_mp/sd.inc"
+
+// Supply Drops: what to do with the variant in focus in sd_variants (its card is sd_f)
+
+{
+	menuDef
+	{
+		name						"sd_item_popup"
+		rect						0 0 640 480 HORIZONTAL_ALIGN_FULLSCREEN VERTICAL_ALIGN_FULLSCREEN
+		style						WINDOW_STYLE_EMPTY
+		popup
+		foreColor					1 1 1 1
+		focusColor					1 1 1 1
+		fadeCycle					1
+		fadeClamp					1
+		fadeAmount					0.1
+
+		onOpen
+		{
+			if ( dvarstring( "sd_f_equipped" ) != "" )
+			{
+				setfocus "sd_ip_unequip";
+			}
+			else
+			{
+				setfocus "sd_ip_equip";
+			}
+		}
+		onEsc
+		{
+			close self;
+		}
+
+		SD_RECT(0, 0, 640, 480, HORIZONTAL_ALIGN_FULLSCREEN, VERTICAL_ALIGN_FULLSCREEN, 0, 0, 0, 0.6, 1)
+		SD_RECT((0 - 140), (0 - 78), 280, 150, HORIZONTAL_ALIGN_CENTER, VERTICAL_ALIGN_CENTER, 0.05, 0.055, 0.06, 0.97, 1)
+		itemDef
+		{
+			rect					(0 - 140) (0 - 78) 280 3 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER
+			style					WINDOW_STYLE_SHADER
+			background				"white"
+			forecolor				1 1 1 1
+			decoration
+			visible					1
+			exp						forecolor r ( SD_RARITY_R( dvarint( "sd_f_rarity" ) ) )
+			exp						forecolor g ( SD_RARITY_G( dvarint( "sd_f_rarity" ) ) )
+			exp						forecolor b ( SD_RARITY_B( dvarint( "sd_f_rarity" ) ) )
+		}
+		SD_TEXT((0 - 130), (0 - 70), 260, 20, HORIZONTAL_ALIGN_CENTER, VERTICAL_ALIGN_CENTER, 9, 0.42, ITEM_ALIGN_TOP_CENTER, 1, 1, 1, 1, dvarstring( "sd_f_weapon" ) + "  '" + dvarstring( "sd_f_name" ) + "'", 1)
+		SD_TEXT((0 - 130), (0 - 48), 260, 14, HORIZONTAL_ALIGN_CENTER, VERTICAL_ALIGN_CENTER, UI_FONT_SMALL, 0.3, ITEM_ALIGN_TOP_CENTER, 1, 1, 1, 0.7, dvarstring( "sd_f_rname" ), 1)
+
+		SD_CENTER_BUTTON("sd_ip_equip", (0 - 26), "EQUIP", execnow "sd_equip"; close self;, when( dvarstring( "sd_f_equipped" ) == "" ))
+		SD_CENTER_BUTTON("sd_ip_unequip", (0 - 26), "UNEQUIP", execnow "sd_equip"; close self;, when( dvarstring( "sd_f_equipped" ) != "" ))
+		SD_CENTER_BUTTON("sd_ip_salvage", (0 - 2), "SALVAGE  ( +" + dvarstring( "sd_f_salvage" ) + " CREDITS )", execnow "sd_salvage"; close self;, 1)
+		SD_CENTER_BUTTON("sd_ip_cancel", 22, "CANCEL", close self;, 1)
+		SD_TEXT((0 - 130), 50, 260, 14, HORIZONTAL_ALIGN_CENTER, VERTICAL_ALIGN_CENTER, UI_FONT_SMALL, 0.26, ITEM_ALIGN_TOP_CENTER, 1, 1, 1, 0.55, "One variant per weapon. It applies in every class.", 1)
+	}
+}
