@@ -73,13 +73,10 @@
 		
 		MENU_CHOICE_TITLE_VIS(MENU_TITLE, 58, 1)
 
-		// update buttons
-		MENU_CHOICE_BUTTON_VIS(0, button_0, "@MENU_CHECK_FOR_UPDATES_CAPS", CHECK_FOR_UPDATE_ACTION, "@MPUI_DESC_CHECK_FOR_UPDATES", when(dvarBool(cl_updateavailable)))
-		MENU_CHOICE_NEWICON_VIS(0, when(dvarBool(cl_updateavailable)))
-		MENU_CHOICE_HORIZONTAL_LINE_VIS(1, when(dvarBool(cl_updateavailable)))
 
-		// Combat Training: the online experience against bots (in the update button's place when there is none)
-		MENU_CHOICE_BUTTON_VIS(0, button_ct, "COMBAT TRAINING", open ct_playlists;, "Multijugador online contra bots: rango desbloqueos y prestigio.", when(!dvarBool(cl_updateavailable)))
+		// Combat Training: the online experience against bots (in place of IW4x's update button: updating IW4x would replace this build's iw4x.dll)
+		MENU_CHOICE_BUTTON_VIS(0, button_ct, "COMBAT TRAINING", open ct_playlists;, "Multijugador online contra bots: rango desbloqueos y prestigio.", 1)
+		MENU_CHOICE_HORIZONTAL_LINE_VIS(1, 1)
 
 		// general menu buttons
 		MENU_CHOICE_BUTTON_VIS(1, button_1, "@MENU_JOIN_GAME_CAPS", exec "xrequirelivesignin"; open pc_join_unranked;, "@MPUI_DESC_JOIN_GAME", 1)
