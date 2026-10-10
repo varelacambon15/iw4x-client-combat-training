@@ -1,5 +1,6 @@
 #include "CombatTraining.hpp"
 #include "Events.hpp"
+#include "Menus.hpp"
 
 namespace Components
 {
@@ -269,6 +270,9 @@ namespace Components
       NextMap = Dvar::Register<const char*>("ct_nextmap", "", Game::DVAR_NONE, "Combat Training: map of the next match");
       NextGametype = Dvar::Register<const char*>("ct_nextgametype", "", Game::DVAR_NONE, "Combat Training: game mode of the next match");
     });
+
+    // The playlist menu of the mod: a new menu, so it has to be registered to load in the main menu
+    Menus::Add("ui_mp/ct_playlists.menu");
 
     Command::Add("ct_start", [](const Command::Params* params)
     {
