@@ -44,6 +44,8 @@ namespace Components
     static void QueueNext(const Playlist& playlist, const std::string& current);
     static void RememberMap(const std::string& map);
 
+    static void AddSupplyDropFunctions();
+
     static void Start(const std::string& id);
     static void Stop();
   };

@@ -43,26 +43,36 @@ jobs:
       - name: Fetch Bot Warfare
         run: git clone --depth 1 https://github.com/ineedbots/iw4_bot_warfare.git botwarfare
 
-      - name: Assemble package
+      - name: Assemble packages
         shell: pwsh
         run: |
-          $out = "package/CombatTraining"
-          $mod = "$out/mods/combat_training"
-          New-Item -ItemType Directory -Force -Path $mod | Out-Null
-          Copy-Item build/bin/Win32/Release/iw4x.dll $out/
-          Copy-Item -Recurse combat_training/mod/* $mod/
-          Copy-Item -Recurse botwarfare/maps $mod/
-          Copy-Item -Recurse botwarfare/scripts/* $mod/scripts/ -Force
-          Copy-Item -Recurse botwarfare/scriptdata $mod/
-          Copy-Item combat_training/install_konkr.sh $out/
-          Copy-Item combat_training/LEEME.md $out/
-          Compress-Archive -Path $out -DestinationPath CombatTraining.zip -Force
+          # Combat Training, and Advanced Combat Training (Combat Training with Supply Drops and weapon variants)
+          $packages = @(
+            @{ Name = "CombatTraining"; Mod = "combat_training"; Source = "combat_training/mod" },
+            @{ Name = "AdvancedCombatTraining"; Mod = "advanced_combat_training"; Source = "advanced_combat_training/mod" }
+          )
+          foreach ($p in $packages) {
+            $out = "package/$($p.Name)"
+            $mod = "$out/mods/$($p.Mod)"
+            New-Item -ItemType Directory -Force -Path $mod | Out-Null
+            Copy-Item build/bin/Win32/Release/iw4x.dll $out/
+            Copy-Item -Recurse "$($p.Source)/*" $mod/
+            Copy-Item -Recurse botwarfare/maps $mod/
+            Copy-Item -Recurse botwarfare/scripts/* $mod/scripts/ -Force
+            Copy-Item -Recurse botwarfare/scriptdata $mod/
+            Copy-Item combat_training/install_konkr.sh $out/
+            Set-Content -Path "$out/MOD" -Value $p.Mod -NoNewline
+            if (Test-Path "$($p.Source)/../LEEME.md") { Copy-Item "$($p.Source)/../LEEME.md" $out/ } else { Copy-Item combat_training/LEEME.md $out/ }
+            Compress-Archive -Path $out -DestinationPath "$($p.Name).zip" -Force
+          }
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: CombatTraining
-          path: CombatTraining.zip
+          name: packages
+          path: |
+            CombatTraining.zip
+            AdvancedCombatTraining.zip
 
       - name: Publish release
         if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
@@ -71,6 +81,8 @@ jobs:
           tag_name: combat-training-latest
           name: Combat Training
           body: |
-            Build ${{ github.sha }}. Download CombatTraining.zip and follow LEEME.md inside.
-          files: CombatTraining.zip
+            Build ${{ github.sha }}. CombatTraining.zip: Combat Training. AdvancedCombatTraining.zip: with Supply Drops and weapon variants. Follow LEEME.md inside.
+          files: |
+            CombatTraining.zip
+            AdvancedCombatTraining.zip
           make_latest: true

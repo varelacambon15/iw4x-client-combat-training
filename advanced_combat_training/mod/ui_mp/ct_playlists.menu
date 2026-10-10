@@ -1,0 +1,77 @@
+#include "ui/menudef.h"
+#include "ui_mp/main.inc"
+
+// Combat Training: the playlists. Each button starts its playlist (CombatTraining.cpp, combat_training/playlists.txt).
+
+#define MENU_NAME					"ct_playlists"
+#define MENU_MUSIC					"music_mainmenu_mp"
+#define MENU_TITLE					"ADVANCED COMBAT TRAINING"
+
+#undef CHOICE_GROUP
+#define CHOICE_GROUP				MENU_NAME
+
+#undef TEXTSIZE_TITLE
+#define TEXTSIZE_TITLE				FONTSCALE_BIG
+
+#define CHOICE_Y(i)					(88 + (i * 20))
+#define CHOICE_ORIGIN(i)			-64 CHOICE_Y(i)
+#define CHOICE_RECT(i)				CHOICE_ORIGIN(i) 336 20 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_TOP
+
+#define HR_ORIGIN(i)				0 (CHOICE_Y(i) - 0.5)
+#define HR_RECT(i)					HR_ORIGIN(i) 216 1 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_TOP
+
+{
+	menuDef
+	{
+		name						MENU_NAME
+		fullscreen					1
+		rect						0 0 640 480
+		foreColor					CHOICE_TEXTCOLOR
+		focusColor					CHOICE_TEXTCOLOR
+		soundLoop					MENU_MUSIC
+		fadeCycle					1
+		fadeClamp					1
+		fadeAmount					0.1
+
+		MENU_ON_OPEN(setLocalVarString ui_hint_text "";)
+		MENU_ON_ESC(close self;)
+
+		#define BACKGROUND_IW4
+		#include "ui_mp/bg.inc"
+
+		MENU_CHOICE_TITLE_VIS(MENU_TITLE, 58, 1)
+
+		MENU_CHOICE_BUTTON_VIS(0, ct_war, "DUELO POR EQUIPOS", exec "ct_start war"; close self;, "6 contra 6. El primer equipo en llegar al limite de bajas gana.", 1)
+		MENU_CHOICE_BUTTON_VIS(1, ct_dm, "TODOS CONTRA TODOS", exec "ct_start dm"; close self;, "8 jugadores cada uno por su cuenta.", 1)
+		MENU_CHOICE_BUTTON_VIS(2, ct_dom, "DOMINIO", exec "ct_start dom"; close self;, "6 contra 6. Captura y manten las banderas.", 1)
+		MENU_CHOICE_BUTTON_VIS(3, ct_groundwar, "GUERRA TERRESTRE", exec "ct_start groundwar"; close self;, "9 contra 9 en Dominio Duelo por equipos y Cuartel general.", 1)
+		MENU_CHOICE_BUTTON_VIS(4, ct_hq, "CUARTEL GENERAL", exec "ct_start hq"; close self;, "6 contra 6. Captura y defiende el cuartel general.", 1)
+		MENU_CHOICE_BUTTON_VIS(5, ct_sd, "BUSCAR Y DESTRUIR", exec "ct_start sd"; close self;, "5 contra 5 sin reaparicion. Planta o desactiva la bomba.", 1)
+		MENU_CHOICE_BUTTON_VIS(6, ct_sab, "SABOTAJE", exec "ct_start sab"; close self;, "6 contra 6. Una sola bomba para los dos equipos.", 1)
+		MENU_CHOICE_BUTTON_VIS(7, ct_demo, "DEMOLICION", exec "ct_start demo"; close self;, "6 contra 6. Ataca o defiende dos objetivos.", 1)
+		MENU_CHOICE_BUTTON_VIS(8, ct_ctf, "CAPTURA LA BANDERA", exec "ct_start ctf"; close self;, "6 contra 6. Roba la bandera enemiga.", 1)
+		MENU_CHOICE_BUTTON_VIS(9, ct_merc, "MERCENARIOS", exec "ct_start mercenary"; close self;, "Modos variados como la lista Mercenary del online.", 1)
+
+		MENU_CHOICE_HORIZONTAL_LINE_VIS(10, 1)
+		MENU_CHOICE_BUTTON_VIS(10, ct_hcwar, "EXTREMO: DUELO POR EQUIPOS", exec "ct_start hc_war"; close self;, "Sin interfaz menos vida y fuego amigo.", 1)
+		MENU_CHOICE_BUTTON_VIS(11, ct_hcsd, "EXTREMO: BUSCAR Y DESTRUIR", exec "ct_start hc_sd"; close self;, "Buscar y destruir en modo extremo.", 1)
+
+		MENU_CHOICE_HORIZONTAL_LINE_VIS(12, 1)
+		MENU_CHOICE_BUTTON_VIS(12, ct_back, "@MENU_BACK_CAPS", close self;, "@NULL_EMPTY", 1)
+
+		// hint text
+		itemDef
+		{
+			name					"hint_area"
+			rect					0 380 215 18 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_TOP
+			foreColor				1 1 1 0.65
+			textAlign				6
+			textScale				CHOICE_TEXTSIZE
+			textFont				UI_FONT_SMALL
+			decoration
+			autoWrapped
+			visible					1
+			exp						text ( localvarstring( "ui_hint_text" )  )
+		}
+	}
+}

@@ -7,13 +7,16 @@ set -euo pipefail
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
 GAME_DIR_NAME="Call of Duty Modern Warfare 2"
+# Which mod this package holds: combat_training or advanced_combat_training (the file MOD next to this script)
+MOD="$(cat "$HERE/MOD" 2>/dev/null | tr -d '[:space:]')"
+MOD="${MOD:-combat_training}"
 RAWFILES_URL="https://github.com/iw4x/iw4x-rawfiles/releases/latest/download/release.zip"
-LAUNCH_OPTIONS="bash -c 'exec \"\${@/iw4mp.exe/iw4x.exe}\"' -- %command% +set fs_game mods/combat_training"
+LAUNCH_OPTIONS="bash -c 'exec \"\${@/iw4mp.exe/iw4x.exe}\"' -- %command% +set fs_game mods/$MOD"
 
 say() { printf '\033[1;33m==>\033[0m %s\n' "$*"; }
 fail() { printf '\033[1;31mError:\033[0m %s\n' "$*" >&2; exit 1; }
 
-[ -f "$HERE/iw4x.dll" ] && [ -d "$HERE/mods/combat_training" ] || fail "ejecuta este script desde la carpeta CombatTraining descomprimida"
+[ -f "$HERE/iw4x.dll" ] && [ -d "$HERE/mods/$MOD" ] || fail "ejecuta este script desde la carpeta del paquete descomprimida"
 
 # --- La carpeta del juego: la indicada, o en cualquiera de las bibliotecas de Steam -------------------------------
 GAME=""
@@ -73,16 +76,16 @@ mkdir -p "$GAME/mods"
 keep=("combat_training/user.cfg" "scriptdata/ct_mmr.txt")
 saved="$(mktemp -d)"
 for f in "${keep[@]}"; do
-    if [ -f "$GAME/mods/combat_training/$f" ]; then
+    if [ -f "$GAME/mods/$MOD/$f" ]; then
         mkdir -p "$saved/$(dirname "$f")"
-        cp "$GAME/mods/combat_training/$f" "$saved/$f"
+        cp "$GAME/mods/$MOD/$f" "$saved/$f"
     fi
 done
-rm -rf "$GAME/mods/combat_training"
-cp -r "$HERE/mods/combat_training" "$GAME/mods/"
-cp -r "$saved/." "$GAME/mods/combat_training/"
+rm -rf "$GAME/mods/$MOD"
+cp -r "$HERE/mods/$MOD" "$GAME/mods/"
+cp -r "$saved/." "$GAME/mods/$MOD/"
 rm -rf "$saved"
-say "Combat Training instalado"
+say "Instalado: mods/$MOD"
 
 # --- Opciones de lanzamiento ---------------------------------------------------------------------------------------
 echo
@@ -102,10 +105,10 @@ else
     echo "   2. En el juego añadido: Propiedades -> Compatibilidad -> Forzar una herramienta de compatibilidad -> Proton."
     echo "   3. En Propiedades -> General -> 'Opciones de lanzamiento' pega:"
     echo
-    echo "      +set fs_game mods/combat_training"
+    echo "      +set fs_game mods/$MOD"
     echo
     echo "   Steam tiene que estar abierto y con el MW2 en tu cuenta: IW4x lo comprueba al arrancar."
-    copy="+set fs_game mods/combat_training"
+    copy="+set fs_game mods/$MOD"
 fi
 if command -v wl-copy >/dev/null 2>&1; then
     printf '%s' "$copy" | wl-copy && echo "   Las opciones de lanzamiento ya están copiadas en el portapapeles."

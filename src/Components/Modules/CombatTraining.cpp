@@ -2,6 +2,8 @@
 #include "Events.hpp"
 #include "Menus.hpp"
 
+#include "GSC/Script.hpp"
+
 namespace Components
 {
   Dvar::Var CombatTraining::Active;
@@ -256,6 +258,77 @@ namespace Components
     Command::Execute("disconnect", false);
   }
 
+  // For the Supply Drops mod (userraw/scripts/mp/sd_*.gsc): its save files in one fixed place, players/supply_drops/,
+  // whichever mod is loaded (the stock FileRead/FileWrite go to the loaded mod's own folder), and today's date and week
+  // for its daily and weekly contracts.
+  namespace
+  {
+    bool ValidSaveName(const char* name)
+    {
+      if (name == nullptr || *name == '\0' || std::strlen(name) > 64 || std::strstr(name, "..") != nullptr)
+      {
+        return false;
+      }
+
+      for (const auto* c = name; *c; ++c)
+      {
+        if (!std::isalnum(static_cast<unsigned char>(*c)) && *c != '_' && *c != '-' && *c != '.')
+        {
+          return false;
+        }
+      }
+
+      return true;
+    }
+
+    std::string LocalTime(const char* format)
+    {
+      const auto now = std::time(nullptr);
+      std::tm tm{};
+      localtime_s(&tm, &now);
+      char buffer[32]{};
+      std::strftime(buffer, sizeof(buffer), format, &tm);
+      return buffer;
+    }
+  }
+
+  void CombatTraining::AddSupplyDropFunctions()
+  {
+    GSC::Script::AddFunction("SDRead", [] // gsc: SDRead(<name>) -> the file's text, "" if there is none
+    {
+      const auto* name = Game::Scr_GetString(0);
+      std::string data;
+      if (ValidSaveName(name))
+      {
+        Utils::IO::ReadFile(std::format("players/supply_drops/{}", name), &data);
+      }
+      data = data.substr(0, (1 << 16) - 1);
+      Game::Scr_AddString(data.data());
+    });
+
+    GSC::Script::AddFunction("SDWrite", [] // gsc: SDWrite(<name>, <text>)
+    {
+      const auto* name = Game::Scr_GetString(0);
+      const auto* text = Game::Scr_GetString(1);
+      if (!ValidSaveName(name) || text == nullptr)
+      {
+        Game::Scr_ParamError(0, "SDWrite: invalid file name");
+        return;
+      }
+      Utils::IO::WriteFile(std::format("players/supply_drops/{}", name), text, false);
+    });
+
+    GSC::Script::AddFunction("SDDate", [] // gsc: SDDate() -> "2026-10-10"
+    {
+      Game::Scr_AddString(LocalTime("%Y-%m-%d").data());
+    });
+
+    GSC::Script::AddFunction("SDWeek", [] // gsc: SDWeek() -> "2026-W41"
+    {
+      Game::Scr_AddString(LocalTime("%G-W%V").data());
+    });
+  }
+
   CombatTraining::CombatTraining()
   {
     if (Dedicated::IsEnabled() || ZoneBuilder::IsEnabled())
@@ -297,6 +370,8 @@ namespace Components
         Logger::Print("{} : {} ({} players, {} maps)\n", playlist.id, playlist.name, playlist.players, playlist.maps.size());
       }
     });
+    AddSupplyDropFunctions();
+
     // (the mod's main menu sets ct_active back to 0 when it opens: back in the menus, Combat Training is over)
   }
 }
