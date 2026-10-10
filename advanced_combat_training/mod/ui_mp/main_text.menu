@@ -75,7 +75,7 @@
 
 
 		// Combat Training: the online experience against bots (in place of IW4x's update button: updating IW4x would replace this build's iw4x.dll)
-		MENU_CHOICE_BUTTON_VIS(0, button_ct, "ADVANCED COMBAT TRAINING", open ct_playlists;, "Multijugador online contra bots con Supply Drops y variantes de armas.", 1)
+		MENU_CHOICE_BUTTON_VIS(0, button_ct, "ADVANCED COMBAT TRAINING", open ct_playlists;, "Online multiplayer against bots, with Supply Drops and weapon variants.", 1)
 		MENU_CHOICE_HORIZONTAL_LINE_VIS(1, 1)
 
 		// general menu buttons

@@ -307,23 +307,23 @@ ct_end_of_match()
 	next.sort = 1001;
 	next.foreground = true;
 	next.hidewheninmenu = false;
-	next settext( "Siguiente partida: " + ct_gametype_name( gametype ) + " en " + ct_map_name( map ) );
+	next settext( "Next match: " + ct_gametype_name( gametype ) + " on " + ct_map_name( map ) );
 }
 
 ct_gametype_name( gametype )
 {
 	switch ( gametype )
 	{
-		case "war": return "Duelo por equipos";
-		case "dm": return "Todos contra todos";
-		case "dom": return "Dominio";
-		case "koth": return "Cuartel general";
-		case "sab": return "Sabotaje";
-		case "sd": return "Buscar y destruir";
-		case "dd": return "Demolicion";
-		case "ctf": return "Captura la bandera";
-		case "gtnw": return "Guerra termonuclear";
-		case "oneflag": return "Una bandera";
+		case "war": return "Team Deathmatch";
+		case "dm": return "Free-for-all";
+		case "dom": return "Domination";
+		case "koth": return "Headquarters";
+		case "sab": return "Sabotage";
+		case "sd": return "Search and Destroy";
+		case "dd": return "Demolition";
+		case "ctf": return "Capture the Flag";
+		case "gtnw": return "Global Thermonuclear War";
+		case "oneflag": return "One Flag CTF";
 		case "arena": return "Arena";
 		case "vip": return "VIP";
 	}

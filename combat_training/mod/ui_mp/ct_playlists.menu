@@ -41,23 +41,23 @@
 
 		MENU_CHOICE_TITLE_VIS(MENU_TITLE, 58, 1)
 
-		MENU_CHOICE_BUTTON_VIS(0, ct_war, "DUELO POR EQUIPOS", exec "ct_start war"; close self;, "6 contra 6. El primer equipo en llegar al limite de bajas gana.", 1)
-		MENU_CHOICE_BUTTON_VIS(1, ct_dm, "TODOS CONTRA TODOS", exec "ct_start dm"; close self;, "8 jugadores cada uno por su cuenta.", 1)
-		MENU_CHOICE_BUTTON_VIS(2, ct_dom, "DOMINIO", exec "ct_start dom"; close self;, "6 contra 6. Captura y manten las banderas.", 1)
-		MENU_CHOICE_BUTTON_VIS(3, ct_groundwar, "GUERRA TERRESTRE", exec "ct_start groundwar"; close self;, "9 contra 9 en Dominio Duelo por equipos y Cuartel general.", 1)
-		MENU_CHOICE_BUTTON_VIS(4, ct_hq, "CUARTEL GENERAL", exec "ct_start hq"; close self;, "6 contra 6. Captura y defiende el cuartel general.", 1)
-		MENU_CHOICE_BUTTON_VIS(5, ct_sd, "BUSCAR Y DESTRUIR", exec "ct_start sd"; close self;, "5 contra 5 sin reaparicion. Planta o desactiva la bomba.", 1)
-		MENU_CHOICE_BUTTON_VIS(6, ct_sab, "SABOTAJE", exec "ct_start sab"; close self;, "6 contra 6. Una sola bomba para los dos equipos.", 1)
-		MENU_CHOICE_BUTTON_VIS(7, ct_demo, "DEMOLICION", exec "ct_start demo"; close self;, "6 contra 6. Ataca o defiende dos objetivos.", 1)
-		MENU_CHOICE_BUTTON_VIS(8, ct_ctf, "CAPTURA LA BANDERA", exec "ct_start ctf"; close self;, "6 contra 6. Roba la bandera enemiga.", 1)
-		MENU_CHOICE_BUTTON_VIS(9, ct_merc, "MERCENARIOS", exec "ct_start mercenary"; close self;, "Modos variados como la lista Mercenary del online.", 1)
+		MENU_CHOICE_BUTTON_VIS(0, ct_war, "TEAM DEATHMATCH", exec "ct_start war"; close self;, "6 vs 6. First team to reach the score limit wins.", 1)
+		MENU_CHOICE_BUTTON_VIS(1, ct_dm, "FREE-FOR-ALL", exec "ct_start dm"; close self;, "8 players, every man for himself.", 1)
+		MENU_CHOICE_BUTTON_VIS(2, ct_dom, "DOMINATION", exec "ct_start dom"; close self;, "6 vs 6. Capture and hold the flags.", 1)
+		MENU_CHOICE_BUTTON_VIS(3, ct_groundwar, "GROUND WAR", exec "ct_start groundwar"; close self;, "9 vs 9 in Domination, Team Deathmatch and Headquarters.", 1)
+		MENU_CHOICE_BUTTON_VIS(4, ct_hq, "HEADQUARTERS", exec "ct_start hq"; close self;, "6 vs 6. Capture and defend the headquarters.", 1)
+		MENU_CHOICE_BUTTON_VIS(5, ct_sd, "SEARCH AND DESTROY", exec "ct_start sd"; close self;, "5 vs 5, no respawns. Plant or defuse the bomb.", 1)
+		MENU_CHOICE_BUTTON_VIS(6, ct_sab, "SABOTAGE", exec "ct_start sab"; close self;, "6 vs 6. One bomb for both teams.", 1)
+		MENU_CHOICE_BUTTON_VIS(7, ct_demo, "DEMOLITION", exec "ct_start demo"; close self;, "6 vs 6. Attack or defend two targets.", 1)
+		MENU_CHOICE_BUTTON_VIS(8, ct_ctf, "CAPTURE THE FLAG", exec "ct_start ctf"; close self;, "6 vs 6. Steal the enemy flag.", 1)
+		MENU_CHOICE_BUTTON_VIS(9, ct_merc, "MERCENARY", exec "ct_start mercenary"; close self;, "Mixed modes, like the online Mercenary playlist.", 1)
 
 		MENU_CHOICE_HORIZONTAL_LINE_VIS(10, 1)
-		MENU_CHOICE_BUTTON_VIS(10, ct_hcwar, "EXTREMO: DUELO POR EQUIPOS", exec "ct_start hc_war"; close self;, "Sin interfaz menos vida y fuego amigo.", 1)
-		MENU_CHOICE_BUTTON_VIS(11, ct_hcsd, "EXTREMO: BUSCAR Y DESTRUIR", exec "ct_start hc_sd"; close self;, "Buscar y destruir en modo extremo.", 1)
+		MENU_CHOICE_BUTTON_VIS(10, ct_hcwar, "HARDCORE TEAM DEATHMATCH", exec "ct_start hc_war"; close self;, "No HUD, less health, friendly fire.", 1)
+		MENU_CHOICE_BUTTON_VIS(11, ct_hcsd, "HARDCORE SEARCH AND DESTROY", exec "ct_start hc_sd"; close self;, "Search and Destroy in hardcore mode.", 1)
 
 		MENU_CHOICE_HORIZONTAL_LINE_VIS(12, 1)
-		MENU_CHOICE_BUTTON_VIS(12, ct_back, "@MENU_BACK_CAPS", close self;, "@NULL_EMPTY", 1)
+		MENU_CHOICE_BUTTON_VIS(12, ct_back, "BACK", close self;, "@NULL_EMPTY", 1)
 
 		// hint text
 		itemDef
