@@ -87,7 +87,7 @@
 		MENU_CHOICE_HORIZONTAL_LINE_VIS(2, 1)
 		SD_BUTTON(2, sd_armory, "ARMORY  (" + dvarint( "sd_items" ) + ")", execnow "sd_armory"; open sd_armory;, SD_NOP, "Your variants: equip one for each weapon, or salvage them for COD Points.", 1)
 
-		SD_BUTTON(3, sd_store, "WEAPONS STORE", execnow "sd_store"; open sd_store;, SD_NOP, "New weapons, bought with COD Points. You use them in place of a stock weapon of their kind.", 1)
+		SD_BUTTON(3, sd_store, "WEAPONS STORE", execnow "sd_store"; open sd_store;, SD_NOP, "New weapons, bought with COD Points. Once bought, they are in Create a Class, in STORE WEAPONS.", 1)
 
 		MENU_CHOICE_HORIZONTAL_LINE_VIS(4, 1)
 		SD_BUTTON(4, sd_buy, "BUY SUPPLY DROP  -  " + dvarint( "sd_price_drop" ) + " CP", execnow "sd_buy 0";, SD_NOP, "Buy a Supply Drop with COD Points. COD Points come from matches, drops and salvaging.", 1)

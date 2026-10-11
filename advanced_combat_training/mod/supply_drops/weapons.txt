@@ -1,6 +1,8 @@
 // Advanced Combat Training: weapons added by mods, sold in the Weapons Store for COD Points.
-// A weapon bought is chosen in Create a Class, in the variant step of a stock weapon of the same category, and is used
-// in its place (without attachments). Only the ones installed (weapons/mp/<ref>_mp) show up.
+// A weapon bought is chosen in Create a Class, in STORE WEAPONS (it has no attachments nor camos). Only the ones
+// installed (weapons/mp/<ref>_mp) can be bought. After changing this list, run tools/build_sd_menus.py: it rebuilds the
+// STORE WEAPONS popup and the stats/unlock tables from it. The picture and the localized name (WEAPON_<REF>) come
+// from the weapon's own mod.
 //
 // ref | name | category (assault smg lmg sniper shotgun mpistol pistol) | price | picture | accuracy damage range firerate mobility
 

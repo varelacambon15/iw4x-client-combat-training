@@ -57,9 +57,8 @@ el icono de "nuevo" cuando tienes cajas sin abrir):
 - **COD Points (CP):** la moneda. Se ganan al final de cada partida, al abrir cajas y al desguazar variantes. Con ellos
   compras Supply Drops y armas nuevas.
 - **Tienda de armas:** armas nuevas (de momento los 11 francotiradores de MONACO: HDR, AX-50, Kar98k...), caras a
-  propósito. Una vez compradas, en Crear una clase eliges un francotirador y en el paso de variantes sale el arma nueva
-  "IN ITS PLACE": en partida llevas la nueva en lugar de esa (sin accesorios). El instalador las descarga del proyecto
-  MONACO (github.com/simonlfc/MONACO).
+  propósito. Una vez compradas aparecen en Crear una clase, en la categoría **STORE WEAPONS**, como una más (sin
+  accesorios ni camuflajes). El instalador las descarga del proyecto MONACO (github.com/simonlfc/MONACO).
 - **Contratos:** 3 diarios y 1 semanal, con su progreso en la pantalla de Supply Drops.
 - **Cómo se consiguen:** una por cada 45 minutos jugados, una cada 5 niveles, dos Advanced por prestigio, una por la
   primera victoria del día y por los contratos. Empiezas con una.

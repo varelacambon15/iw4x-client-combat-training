@@ -26,6 +26,9 @@ namespace Components
 
     StructuredData();
 
+    // Adds entries to a list of the player data (also used by SupplyDrops for its store weapons)
+    static void PatchPlayerDataEnum(Game::StructuredDataDef* data, PlayerDataType type, std::vector<std::string>& entries);
+
   private:
     static bool UpdateVersionOffsets(Game::StructuredDataDefSet *set, Game::StructuredDataBuffer *buffer, Game::StructuredDataDef *oldDef);
 
@@ -33,7 +36,6 @@ namespace Components
     static std::string ModFsGame;
     static Game::StructuredDataDef* StatsPlayerDataDefs;
 
-    static void PatchPlayerDataEnum(Game::StructuredDataDef* data, PlayerDataType type, std::vector<std::string>& entries);
     static void PatchAdditionalData(Game::StructuredDataDef* data, std::unordered_map<std::string, std::string>& patches);
 
     static void PatchCustomClassLimit(Game::StructuredDataDef* data, int count);

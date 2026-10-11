@@ -34,6 +34,6 @@
 
 		SD_CENTER_BUTTON("sd_bp_buy", (0 - 26), "BUY", execnow "sd_sbuy"; close self;, 1)
 		SD_CENTER_BUTTON("sd_bp_cancel", (0 - 2), "CANCEL", close self;, 1)
-		SD_TEXT((0 - 130), 30, 260, 30, HORIZONTAL_ALIGN_CENTER, VERTICAL_ALIGN_CENTER, UI_FONT_SMALL, 0.26, ITEM_ALIGN_TOP_CENTER, 1, 1, 1, 0.55, "Then, in Create a Class, pick a " + dvarstring( "sd_sf_category" ) + " and choose it in its place.", 1)
+		SD_TEXT((0 - 130), 30, 260, 30, HORIZONTAL_ALIGN_CENTER, VERTICAL_ALIGN_CENTER, UI_FONT_SMALL, 0.26, ITEM_ALIGN_TOP_CENTER, 1, 1, 1, 0.55, "Then choose it in Create a Class, in STORE WEAPONS.", 1)
 	}
 }

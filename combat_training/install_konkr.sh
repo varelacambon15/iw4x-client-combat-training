@@ -109,6 +109,8 @@ if [ "$MOD" = "advanced_combat_training" ]; then
         cp "$MONACO_CACHE"/weapons/mp/*_mp "$GAME/mods/$MOD/weapons/mp/"
         say "Armas nuevas instaladas (tienda de armas)"
     else
+        # sin las armas, fuera las tablas que las nombran (el juego intentaria cargarlas)
+        rm -f "$GAME/mods/$MOD/mp/statstable.csv" "$GAME/mods/$MOD/mp/unlocktable.csv"
         printf '\033[1;35mAviso:\033[0m no se pudieron descargar las armas de MONACO; el mod funciona igual, sin la tienda de armas. Vuelve a ejecutar el instalador mas tarde.\n'
     fi
 fi

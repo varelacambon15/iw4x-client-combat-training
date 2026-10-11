@@ -1,6 +1,7 @@
 #include "SupplyDrops.hpp"
 #include "Events.hpp"
 #include "Menus.hpp"
+#include "StructuredData.hpp"
 
 #include "GSC/Script.hpp"
 
@@ -731,7 +732,7 @@ namespace Components
         SetDvar(p + "_ddmg", 0);
         SetDvar(p + "_drng", 0);
         SetDvar(p + "_dmob", 0);
-        SetDvar(p + "_mod0", added ? std::format("Used in place of a stock {} in your classes.", added->category == "sniper" ? "sniper rifle" : added->category) : "No changes to the weapon.");
+        SetDvar(p + "_mod0", added ? std::string("In Create a Class, in STORE WEAPONS.") : std::string("No changes to the weapon."));
         for (int i = 1; i < 4; ++i)
         {
           SetDvar(std::format("{}_mod{}", p, i), "");
@@ -783,8 +784,6 @@ namespace Components
       return c.type;
     }
 
-    std::vector<const AddedWeapon*> OwnedAddedFor(const std::string& base);
-
     void PublishMain()
     {
       Load();
@@ -820,10 +819,16 @@ namespace Components
         SetDvar(p + "_done", c->done ? 1 : 0);
       }
 
+      // Create a Class: a store weapon can be chosen once bought
+      if (!AddedLoaded) LoadAddedWeapons();
+      for (const auto& added : AddedWeapons)
+      {
+        SetDvar(std::format("sd_owned_{}", added.ref), std::ranges::find(Data.owned, added.ref) != Data.owned.end() ? 1 : 0);
+      }
+
       for (const auto& weapon : WEAPONS)
       {
-        // Create a Class opens its variant step when there is something to choose: variants, or added weapons bought
-        SetDvar(std::format("sd_own_{}", weapon.ref), CountFor(weapon.ref) + static_cast<int>(OwnedAddedFor(weapon.ref).size()));
+        SetDvar(std::format("sd_own_{}", weapon.ref), CountFor(weapon.ref));
       }
     }
 
@@ -1178,23 +1183,6 @@ namespace Components
       return it->second;
     }
 
-    // The added weapons you have bought that can take the place of a stock weapon
-    std::vector<const AddedWeapon*> OwnedAddedFor(const std::string& base)
-    {
-      std::vector<const AddedWeapon*> list;
-      const auto* weapon = FindWeapon(base);
-      if (!weapon) return list;
-      if (!AddedLoaded) LoadAddedWeapons();
-      for (const auto& added : AddedWeapons)
-      {
-        if (added.category == weapon->category && Owns(added.ref))
-        {
-          list.emplace_back(&added);
-        }
-      }
-      return list;
-    }
-
     void PublishCac()
     {
       Load();
@@ -1202,11 +1190,6 @@ namespace Components
       const auto replacement = ReplacementFor(ref);
 
       CacSlots = { CacSlot{} };
-      for (const auto* added : OwnedAddedFor(ref))
-      {
-        if (static_cast<int>(CacSlots.size()) >= CAC_ROWS) break;
-        CacSlots.push_back({ 0, added->ref });
-      }
       for (const auto* item : VariantsOf(ref))
       {
         if (static_cast<int>(CacSlots.size()) >= CAC_ROWS) break;
@@ -1380,6 +1363,12 @@ namespace Components
         Game::Scr_AddString(text.data());
       });
 
+      GSC::Script::AddFunction("SDOwnsWeapon", [] // gsc: SDOwnsWeapon(<store weapon ref>) -> 1 if bought
+      {
+        Load();
+        Game::Scr_AddInt(Owns(Game::Scr_GetString(0)) ? 1 : 0);
+      });
+
       GSC::Script::AddFunction("SDAddedWeapons", [] // gsc: SDAddedWeapons() -> the installed added weapons, "hdr ax50 ..."
       {
         LoadAddedWeapons();
@@ -1482,6 +1471,7 @@ namespace Components
     Menus::Add("ui_mp/sd_item_popup.menu");
     Menus::Add("ui_mp/sd_store.menu");
     Menus::Add("ui_mp/sd_buy_popup.menu");
+    Menus::Add("ui_mp/popup_cac_store_primary.menu");
     Menus::Add("ui_mp/popup_sd_variant.menu");
     // Create a Class popups of the stock game, rebuilt with the variant step
     Menus::Add("ui_mp/popup_cac_lmg_primary.menu");
@@ -1489,6 +1479,63 @@ namespace Components
     Menus::Add("ui_mp/popup_cac_machinepistols_secondary.menu");
 
     AddScriptFunctions();
+
+    // Create a Class saves a class's weapon as one of a closed list of the stats (mp/playerdata.def). As IW4x does for
+    // its own weapons, the store weapons are added to that list (within the room the list keeps for new entries), so
+    // that a class can hold them. Only with Advanced Combat Training loaded; the stats layout does not change.
+    AssetHandler::OnLoad([](Game::XAssetType type, Game::XAssetHeader asset, const std::string& filename, bool* /*restrict*/)
+    {
+      if (type != Game::ASSET_TYPE_STRUCTURED_DATA_DEF || filename != "mp/playerdata.def" || !asset.structuredDataDefSet)
+      {
+        return;
+      }
+
+      const std::string fsGame = (*Game::fs_gameDirVar) ? (*Game::fs_gameDirVar)->current.string : "";
+      if (fsGame.find("advanced_combat_training") == std::string::npos)
+      {
+        return;
+      }
+
+      FileSystem::File file("supply_drops/weapons.txt", Game::FsThread::FS_THREAD_DATABASE);
+      if (!file.exists())
+      {
+        return;
+      }
+
+      auto* def = &asset.structuredDataDefSet->defs[0];
+      auto* weapons = &def->enums[StructuredData::PlayerDataType::WEAPONS];
+
+      std::vector<std::string> entries;
+      for (auto& line : Utils::String::Split(file.getBuffer(), '\n'))
+      {
+        Utils::String::Replace(line, "\r", "");
+        Utils::String::Trim(line);
+        if (line.empty() || line.starts_with("//") || line.starts_with("#")) continue;
+        auto ref = Utils::String::Split(line, '|')[0];
+        Utils::String::Trim(ref);
+        ref = Utils::String::ToLower(ref);
+
+        bool present = false;
+        for (int i = 0; i < weapons->entryCount; ++i)
+        {
+          if (ref == weapons->entries[i].string) present = true;
+        }
+        if (!present && !ref.empty()) entries.emplace_back(ref);
+      }
+
+      if (entries.empty())
+      {
+        return;
+      }
+      if (weapons->entryCount + static_cast<int>(entries.size()) > weapons->reservedEntryCount)
+      {
+        Logger::PrintError(Game::CON_CHANNEL_ERROR, "Supply Drops: no room for {} more weapons in the player data\n", entries.size());
+        return;
+      }
+
+      StructuredData::PatchPlayerDataEnum(def, StructuredData::PlayerDataType::WEAPONS, entries);
+      Logger::Print("Supply Drops: {} store weapons added to the class data\n", entries.size());
+    });
 
     Command::Add("sd_refresh", []
     {
@@ -1701,7 +1748,7 @@ namespace Components
       Data.credits -= weapon->price;
       Data.owned.emplace_back(weapon->ref);
       Save();
-      SetDvar("sd_msg", std::format("^2Purchased:^7 {}. Choose it in Create a Class, in place of a {}.", weapon->name, weapon->category == "sniper" ? "sniper rifle" : weapon->category));
+      SetDvar("sd_msg", std::format("^2Purchased:^7 {}. Choose it in Create a Class, in STORE WEAPONS.", weapon->name));
       PublishStore();
       PublishStoreFocus();
     });

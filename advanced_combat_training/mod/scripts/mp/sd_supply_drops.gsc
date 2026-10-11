@@ -150,34 +150,43 @@ sd_watch_weapon()
 	}
 }
 
-// An added weapon you bought and chose in Create a Class, in place of the stock one (without its attachments)
+// A Weapons Store weapon chosen in Create a Class (STORE WEAPONS). The stock class script does not know these weapons
+// and gives the class a default one instead; here it gets the store weapon back, if you have bought it.
 sd_replace_weapons()
 {
-	if ( !isdefined( level.sdAdded ) || level.sdAdded.size == 0 )
+	if ( !isdefined( level.sdAdded ) || level.sdAdded.size == 0 || !isdefined( self.class ) || !issubstr( self.class, "custom" ) )
 		return;
 
-	foreach ( weapon in self getweaponslistprimaries() )
+	index = int( getsubstr( self.class, 6 ) ) - 1;
+	if ( index < 0 )
+		return;
+
+	ref = self getplayerdata( "customClasses", index, "weaponSetups", 0, "weapon" );
+	if ( !isdefined( ref ) || !sd_is_store_weapon( ref ) || !sdownsweapon( ref ) )
+		return;
+
+	storeWeapon = ref + "_mp";
+	if ( self hasweapon( storeWeapon ) )
+		return;
+
+	if ( isdefined( self.primaryWeapon ) && self.primaryWeapon != "none" && self hasweapon( self.primaryWeapon ) )
+		self takeweapon( self.primaryWeapon );
+
+	self giveweapon( storeWeapon );
+	self givemaxammo( storeWeapon );
+	self.primaryWeapon = storeWeapon;
+	self setspawnweapon( storeWeapon );
+	self switchtoweapon( storeWeapon );
+}
+
+sd_is_store_weapon( ref )
+{
+	foreach ( added in level.sdAdded )
 	{
-		base = sd_base_of( weapon );
-		if ( base == "" )
-			continue;
-
-		added = sdreplacement( base );
-		if ( added == "" )
-			continue;
-
-		addedWeapon = added + "_mp";
-		self takeweapon( weapon );
-		self giveweapon( addedWeapon );
-		self givemaxammo( addedWeapon );
-
-		if ( isdefined( self.primaryWeapon ) && self.primaryWeapon == weapon )
-		{
-			self.primaryWeapon = addedWeapon;
-			self setspawnweapon( addedWeapon );
-			self switchtoweapon( addedWeapon );
-		}
+		if ( added == ref )
+			return true;
 	}
+	return false;
 }
 
 // The speed _weapons.gsc gives each class of weapon
