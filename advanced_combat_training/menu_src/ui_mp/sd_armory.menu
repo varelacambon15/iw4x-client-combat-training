@@ -58,8 +58,8 @@
 
 		MENU_CHOICE_HORIZONTAL_LINE_VIS(10, 1)
 		SD_BUTTON(10, sd_aw_next, "NEXT PAGE  (" + dvarstring( "sd_aw_page" ) + ")", execnow "sd_armory 1"; setfocus "sd_aw_0"; execnow "sd_afocus 0";, SD_NOP, "", when( dvarint( "sd_aw_pages" ) > 1 ))
-		SD_BUTTON(11, sd_aw_salvage0, "SALVAGE ALL ENLISTED", execnow "sd_salvage_all 0";, SD_NOP, "Salvages every Enlisted variant that is not equipped, for Credits.", when( dvarint( "sd_aw_count" ) > 0 ))
-		SD_BUTTON(12, sd_aw_salvage1, "SALVAGE ALL PROFESSIONAL", execnow "sd_salvage_all 1";, SD_NOP, "Salvages every Professional variant that is not equipped, for Credits.", when( dvarint( "sd_aw_count" ) > 0 ))
+		SD_BUTTON(11, sd_aw_salvage0, "SALVAGE ALL ENLISTED", execnow "sd_salvage_all 0";, SD_NOP, "Salvages every Enlisted variant that is not equipped, for COD Points.", when( dvarint( "sd_aw_count" ) > 0 ))
+		SD_BUTTON(12, sd_aw_salvage1, "SALVAGE ALL PROFESSIONAL", execnow "sd_salvage_all 1";, SD_NOP, "Salvages every Professional variant that is not equipped, for COD Points.", when( dvarint( "sd_aw_count" ) > 0 ))
 		MENU_CHOICE_HORIZONTAL_LINE_VIS(13, 1)
 		MENU_CHOICE_BUTTON_VIS(13, sd_aw_back, "BACK", close self;, "", 1)
 

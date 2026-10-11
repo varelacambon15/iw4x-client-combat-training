@@ -19,6 +19,11 @@ init()
 	if ( getdvar( "sd_disable" ) == "1" || getdvarint( "ct_active" ) != 1 )
 		return;
 
+	// The weapons added by mods (supply_drops/weapons.txt), given in place of a stock weapon when bought
+	level.sdAdded = strtok( sdaddedweapons(), " " );
+	foreach ( added in level.sdAdded )
+		precacheitem( added + "_mp" );
+
 	level thread sd_hook_callbacks();
 	level thread sd_on_player_connect();
 	level thread sd_end_of_match();
@@ -145,6 +150,36 @@ sd_watch_weapon()
 	}
 }
 
+// An added weapon you bought and chose in Create a Class, in place of the stock one (without its attachments)
+sd_replace_weapons()
+{
+	if ( !isdefined( level.sdAdded ) || level.sdAdded.size == 0 )
+		return;
+
+	foreach ( weapon in self getweaponslistprimaries() )
+	{
+		base = sd_base_of( weapon );
+		if ( base == "" )
+			continue;
+
+		added = sdreplacement( base );
+		if ( added == "" )
+			continue;
+
+		addedWeapon = added + "_mp";
+		self takeweapon( weapon );
+		self giveweapon( addedWeapon );
+		self givemaxammo( addedWeapon );
+
+		if ( isdefined( self.primaryWeapon ) && self.primaryWeapon == weapon )
+		{
+			self.primaryWeapon = addedWeapon;
+			self setspawnweapon( addedWeapon );
+			self switchtoweapon( addedWeapon );
+		}
+	}
+}
+
 // The speed _weapons.gsc gives each class of weapon
 sd_class_speed( weapon )
 {
@@ -167,6 +202,8 @@ sd_watch_loadout()
 	{
 		self waittill( "giveLoadout" );
 		waittillframeend;
+
+		self sd_replace_weapons();
 
 		foreach ( weapon in self getweaponslistprimaries() )
 		{
@@ -258,7 +295,13 @@ sd_watch_rank()
 		}
 		else
 		{
-			self sd_announce( "Level up", sdaward( sdconfig( "drops_per_level" ), 0 ) );
+			// A Supply Drop every few levels
+			level_ = self maps\mp\gametypes\_rank::getRank() + 1;
+			every = sdconfig( "levels_per_drop" );
+			if ( every < 1 )
+				every = 1;
+			if ( level_ % every == 0 )
+				self sd_announce( "Level " + level_, sdaward( sdconfig( "drops_per_level" ), 0 ) );
 		}
 	}
 }
@@ -313,7 +356,7 @@ sd_end_of_match()
 
 		credits = sd_match_credits( sd_place( player ) );
 		sdaddcredits( credits );
-		player iprintln( "^3+" + credits + " Credits" );
+		player iprintln( "^3+" + credits + " COD Points" );
 	}
 }
 

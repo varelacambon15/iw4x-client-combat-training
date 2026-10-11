@@ -50,14 +50,19 @@ el icono de "nuevo" cuando tienes cajas sin abrir):
   del juego con lo que la variante sube (verde) o baja (rojo), y la lista de cambios.
 - **Qué cambian:** daño (general, a corta o a larga distancia), daño en la cabeza, movilidad y munición de reserva. Más
   rareza, más ventajas; a veces con una desventaja. Las Advanced traen siempre una Professional o mejor.
-- **Armory:** tus armas con variantes; en cada una eliges cuál equipar o la desguazas (**Salvage**) por Credits. También
+- **Armory:** tus armas con variantes; en cada una eliges cuál equipar o la desguazas (**Salvage**) por COD Points. También
   puedes desguazar de golpe todas las Enlisted o Professional que no tengas equipadas.
 - **Crear una clase:** al elegir un arma de la que tienes variantes, sale un paso más para escoger la variante (o
   ninguna) antes de los accesorios. Va una variante por arma y vale para todas las clases.
-- **Store y contratos:** en la misma pantalla compras Supply Drops con Credits y ves tus contratos (3 diarios y 1
-  semanal) con su progreso.
-- **Cómo se consiguen:** una por cada 30 minutos jugados, una por nivel, dos Advanced por prestigio, una por la primera
-  victoria del día y por los contratos. Credits al final de cada partida, al abrir cajas y al desguazar. Empiezas con una.
+- **COD Points (CP):** la moneda. Se ganan al final de cada partida, al abrir cajas y al desguazar variantes. Con ellos
+  compras Supply Drops y armas nuevas.
+- **Tienda de armas:** armas nuevas (de momento los 11 francotiradores de MONACO: HDR, AX-50, Kar98k...), caras a
+  propósito. Una vez compradas, en Crear una clase eliges un francotirador y en el paso de variantes sale el arma nueva
+  "IN ITS PLACE": en partida llevas la nueva en lugar de esa (sin accesorios). El instalador las descarga del proyecto
+  MONACO (github.com/simonlfc/MONACO).
+- **Contratos:** 3 diarios y 1 semanal, con su progreso en la pantalla de Supply Drops.
+- **Cómo se consiguen:** una por cada 45 minutos jugados, una cada 5 niveles, dos Advanced por prestigio, una por la
+  primera victoria del día y por los contratos. Empiezas con una.
 - **Tu progreso** se guarda en `players/supply_drops/profile.txt`, en la carpeta del juego.
 - **Ajustes:** el ritmo, las probabilidades y los precios están en `mods/advanced_combat_training/supply_drops/config.txt`.
 

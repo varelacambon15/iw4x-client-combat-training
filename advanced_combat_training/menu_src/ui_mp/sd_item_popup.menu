@@ -52,7 +52,7 @@
 
 		SD_CENTER_BUTTON("sd_ip_equip", (0 - 26), "EQUIP", execnow "sd_equip"; close self;, when( dvarstring( "sd_f_equipped" ) == "" ))
 		SD_CENTER_BUTTON("sd_ip_unequip", (0 - 26), "UNEQUIP", execnow "sd_equip"; close self;, when( dvarstring( "sd_f_equipped" ) != "" ))
-		SD_CENTER_BUTTON("sd_ip_salvage", (0 - 2), "SALVAGE  ( +" + dvarstring( "sd_f_salvage" ) + " CREDITS )", execnow "sd_salvage"; close self;, 1)
+		SD_CENTER_BUTTON("sd_ip_salvage", (0 - 2), "SALVAGE  ( +" + dvarstring( "sd_f_salvage" ) + " CP )", execnow "sd_salvage"; close self;, 1)
 		SD_CENTER_BUTTON("sd_ip_cancel", 22, "CANCEL", close self;, 1)
 		SD_TEXT((0 - 130), 50, 260, 14, HORIZONTAL_ALIGN_CENTER, VERTICAL_ALIGN_CENTER, UI_FONT_SMALL, 0.26, ITEM_ALIGN_TOP_CENTER, 1, 1, 1, 0.55, "One variant per weapon. It applies in every class.", 1)
 	}

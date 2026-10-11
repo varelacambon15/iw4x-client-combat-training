@@ -87,6 +87,32 @@ cp -r "$saved/." "$GAME/mods/$MOD/"
 rm -rf "$saved"
 say "Instalado: mods/$MOD"
 
+# --- Advanced Combat Training: las armas de MONACO (github.com/simonlfc/MONACO) para la tienda de armas --------------
+# Se descargan de su proyecto (no van en este paquete) y se guardan en ~/.cache para no bajarlas en cada actualizacion.
+if [ "$MOD" = "advanced_combat_training" ]; then
+    MONACO_SHA="ecf0ba3905f7c4c5f00a2b670ba40241fb59ebac"
+    MONACO_URL="https://github.com/simonlfc/MONACO/raw/$MONACO_SHA"
+    MONACO_CACHE="$HOME/.cache/advanced_combat_training/monaco-$MONACO_SHA"
+    MONACO_WEAPONS="3line ax50 flare hdr kar98 mk2 pelington spr swiss tundra type99 zrg"
+    mkdir -p "$MONACO_CACHE/weapons/mp"
+    ok=1
+    for f in mod.ff data.iwd $(for w in $MONACO_WEAPONS; do echo "weapons/mp/${w}_mp"; done); do
+        if [ ! -s "$MONACO_CACHE/$f" ]; then
+            say "Descargando armas nuevas (MONACO): $f"
+            curl -fL --progress-bar -o "$MONACO_CACHE/$f.part" "$MONACO_URL/$f" && mv "$MONACO_CACHE/$f.part" "$MONACO_CACHE/$f" || { ok=0; rm -f "$MONACO_CACHE/$f.part"; }
+        fi
+    done
+    if [ "$ok" = 1 ]; then
+        cp "$MONACO_CACHE/mod.ff" "$GAME/mods/$MOD/mod.ff"
+        cp "$MONACO_CACHE/data.iwd" "$GAME/mods/$MOD/monaco.iwd"
+        mkdir -p "$GAME/mods/$MOD/weapons/mp"
+        cp "$MONACO_CACHE"/weapons/mp/*_mp "$GAME/mods/$MOD/weapons/mp/"
+        say "Armas nuevas instaladas (tienda de armas)"
+    else
+        printf '\033[1;35mAviso:\033[0m no se pudieron descargar las armas de MONACO; el mod funciona igual, sin la tienda de armas. Vuelve a ejecutar el instalador mas tarde.\n'
+    fi
+fi
+
 # --- Opciones de lanzamiento ---------------------------------------------------------------------------------------
 echo
 if [ "$STEAM_GAME" = 1 ]; then

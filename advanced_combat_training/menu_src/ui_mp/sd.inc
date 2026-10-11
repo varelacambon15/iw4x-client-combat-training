@@ -14,7 +14,6 @@
 // 0..1 without max(): x when 0 < x < 1
 #define SD_CLAMP01(x)		min( 1 , ( x ) * ( ( x ) > 0 ) )
 
-#define SD_STATS			"mp/statsTable.csv"
 
 // A command that does nothing, for an empty macro argument
 #define SD_NOP				setLocalVarBool ui_sd_nop 1;
@@ -104,7 +103,8 @@
 
 // --- A stat bar of a weapon card: the stock value of the weapon (mp/statsTable.csv) and what the variant adds ----
 // P card prefix, col the column of the stat, deltaExpr the change (bar points), A alpha, DY y offset
-#define SD_BAR_BASE(P, col)			tablelookup( SD_STATS , 4 , dvarstring( P + "_ref" ) , col )
+// The stock value of a stat, 0..1 (the game sets <prefix>_s0.._s4: accuracy, damage, range, fire rate, mobility)
+#define SD_BAR_FRAC(P, col)			( dvarint( P + col ) / 100.0 )
 
 #define SD_BAR(P, X, Y, BW, ah, av, labelArg, col, deltaExpr, A, DY, visArg) \
 	itemDef \
@@ -139,7 +139,7 @@
 		forecolor			0.85 0.85 0.85 0.9 \
 		decoration \
 		visible				visArg \
-		exp					rect w ( ( SD_BAR_BASE(P, col) / 100 ) * BW ) \
+		exp					rect w ( SD_BAR_FRAC(P, col) * BW ) \
 		exp					rect y ( Y + 4 + DY ) \
 		exp					forecolor a ( 0.9 * ( A ) ) \
 	} \
@@ -151,8 +151,8 @@
 		forecolor			0.3 0.85 0.3 1 \
 		decoration \
 		visible				visArg \
-		exp					rect x ( X + 78 + ( SD_BAR_BASE(P, col) / 100 ) * BW + ( ( deltaExpr ) < 0 ) * BW * ( deltaExpr ) / 100 ) \
-		exp					rect w ( ( ( deltaExpr ) > 0 ) * min( BW * ( deltaExpr ) / 100 , ( 1 - ( SD_BAR_BASE(P, col) / 100 ) ) * BW ) + ( ( deltaExpr ) < 0 ) * BW * ( 0 - ( deltaExpr ) ) / 100 ) \
+		exp					rect x ( X + 78 + SD_BAR_FRAC(P, col) * BW + ( ( deltaExpr ) < 0 ) * BW * ( deltaExpr ) / 100 ) \
+		exp					rect w ( ( ( deltaExpr ) > 0 ) * min( BW * ( deltaExpr ) / 100 , ( 1 - SD_BAR_FRAC(P, col) ) * BW ) + ( ( deltaExpr ) < 0 ) * BW * ( 0 - ( deltaExpr ) ) / 100 ) \
 		exp					rect y ( Y + 4 + DY ) \
 		exp					forecolor r ( 0.25 + ( ( deltaExpr ) < 0 ) * 0.7 ) \
 		exp					forecolor g ( 0.25 + ( ( deltaExpr ) > 0 ) * 0.65 ) \
@@ -256,7 +256,7 @@
 		forecolor			1 1 1 1 \
 		decoration \
 		visible				visArg \
-		exp					material ( tablelookup( SD_STATS , 4 , dvarstring( P + "_ref" ) , 6 ) ) \
+		exp					material ( dvarstring( P + "_img" ) ) \
 		exp					rect y ( Y + 26 + DY ) \
 		exp					forecolor a ( A ) \
 	} \
@@ -290,11 +290,11 @@
 		exp					forecolor a ( 0.7 * ( A ) ) \
 	} \
 	SD_RECT((X + 10), (Y + 70 + SD_CARD_IH(W)), (W - 20), 1, ah, av, 1, 1, 1, 0.15, visArg) \
-	SD_BAR(P, (X + 10), (Y + 76 + SD_CARD_IH(W)), (W - 98), ah, av, "ACCURACY", 22, 0, A, DY, visArg) \
-	SD_BAR(P, (X + 10), (Y + 92 + SD_CARD_IH(W)), (W - 98), ah, av, "DAMAGE", 23, dvarint( P + "_ddmg" ), A, DY, visArg) \
-	SD_BAR(P, (X + 10), (Y + 108 + SD_CARD_IH(W)), (W - 98), ah, av, "RANGE", 24, dvarint( P + "_drng" ), A, DY, visArg) \
-	SD_BAR(P, (X + 10), (Y + 124 + SD_CARD_IH(W)), (W - 98), ah, av, "FIRE RATE", 25, 0, A, DY, visArg) \
-	SD_BAR(P, (X + 10), (Y + 140 + SD_CARD_IH(W)), (W - 98), ah, av, "MOBILITY", 26, dvarint( P + "_dmob" ), A, DY, visArg) \
+	SD_BAR(P, (X + 10), (Y + 76 + SD_CARD_IH(W)), (W - 98), ah, av, "ACCURACY", "_s0", 0, A, DY, visArg) \
+	SD_BAR(P, (X + 10), (Y + 92 + SD_CARD_IH(W)), (W - 98), ah, av, "DAMAGE", "_s1", dvarint( P + "_ddmg" ), A, DY, visArg) \
+	SD_BAR(P, (X + 10), (Y + 108 + SD_CARD_IH(W)), (W - 98), ah, av, "RANGE", "_s2", dvarint( P + "_drng" ), A, DY, visArg) \
+	SD_BAR(P, (X + 10), (Y + 124 + SD_CARD_IH(W)), (W - 98), ah, av, "FIRE RATE", "_s3", 0, A, DY, visArg) \
+	SD_BAR(P, (X + 10), (Y + 140 + SD_CARD_IH(W)), (W - 98), ah, av, "MOBILITY", "_s4", dvarint( P + "_dmob" ), A, DY, visArg) \
 	SD_RECT((X + 10), (Y + 158 + SD_CARD_IH(W)), (W - 20), 1, ah, av, 1, 1, 1, 0.15, visArg) \
 	SD_CARD_MOD(P, "_mod0", X, (Y + 162 + SD_CARD_IH(W)), W, ah, av, A, DY, visArg) \
 	SD_CARD_MOD(P, "_mod1", X, (Y + 176 + SD_CARD_IH(W)), W, ah, av, A, DY, visArg) \

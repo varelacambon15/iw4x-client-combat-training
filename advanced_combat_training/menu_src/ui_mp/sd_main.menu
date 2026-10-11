@@ -81,18 +81,20 @@
 
 		MENU_CHOICE_TITLE_VIS(MENU_TITLE, 58, 1)
 
-		SD_BUTTON(0, sd_open, "OPEN SUPPLY DROP  (" + dvarint( "sd_drops" ) + ")", if ( dvarint( "sd_drops" ) > 0 ) { execnow "sd_open 0"; setLocalVarInt ui_sd_t0 ( milliseconds( ) ); open sd_reveal; } else { setdvar sd_msg "^1No Supply Drops to open."; }, SD_NOP, "Three weapon variants and Credits. Earn more by playing, levelling up and completing contracts.", 1)
-		SD_BUTTON(1, sd_open_adv, "OPEN ADVANCED SUPPLY DROP  (" + dvarint( "sd_adv" ) + ")", if ( dvarint( "sd_adv" ) > 0 ) { execnow "sd_open 1"; setLocalVarInt ui_sd_t0 ( milliseconds( ) ); open sd_reveal; } else { setdvar sd_msg "^1No Advanced Supply Drops to open."; }, SD_NOP, "Better odds: at least one Professional or Elite variant. Earned by prestige and weekly contracts.", 1)
+		SD_BUTTON(0, sd_open, "OPEN SUPPLY DROP  (" + dvarint( "sd_drops" ) + ")", if ( dvarint( "sd_drops" ) > 0 ) { execnow "sd_open 0"; open sd_reveal; } else { setdvar sd_msg "^1No Supply Drops to open."; }, SD_NOP, "Weapon variants and COD Points. Earn more by playing, every 5 levels and by completing contracts.", 1)
+		SD_BUTTON(1, sd_open_adv, "OPEN ADVANCED SUPPLY DROP  (" + dvarint( "sd_adv" ) + ")", if ( dvarint( "sd_adv" ) > 0 ) { execnow "sd_open 1"; open sd_reveal; } else { setdvar sd_msg "^1No Advanced Supply Drops to open."; }, SD_NOP, "Better odds: at least one Professional or Elite variant. Earned by prestige and weekly contracts.", 1)
 
 		MENU_CHOICE_HORIZONTAL_LINE_VIS(2, 1)
-		SD_BUTTON(2, sd_armory, "ARMORY  (" + dvarint( "sd_items" ) + ")", execnow "sd_armory"; open sd_armory;, SD_NOP, "Your variants: equip one for each weapon, or salvage them for Credits.", 1)
+		SD_BUTTON(2, sd_armory, "ARMORY  (" + dvarint( "sd_items" ) + ")", execnow "sd_armory"; open sd_armory;, SD_NOP, "Your variants: equip one for each weapon, or salvage them for COD Points.", 1)
 
-		MENU_CHOICE_HORIZONTAL_LINE_VIS(3, 1)
-		SD_BUTTON(3, sd_buy, "BUY SUPPLY DROP  -  " + dvarint( "sd_price_drop" ) + " CR", execnow "sd_buy 0";, SD_NOP, "Buy a Supply Drop with Credits. Credits come from matches, drops and salvaging.", 1)
-		SD_BUTTON(4, sd_buy_adv, "BUY ADVANCED  -  " + dvarint( "sd_price_adv" ) + " CR", execnow "sd_buy 1";, SD_NOP, "Buy an Advanced Supply Drop with Credits.", 1)
+		SD_BUTTON(3, sd_store, "WEAPONS STORE", execnow "sd_store"; open sd_store;, SD_NOP, "New weapons, bought with COD Points. You use them in place of a stock weapon of their kind.", 1)
 
-		MENU_CHOICE_HORIZONTAL_LINE_VIS(5, 1)
-		MENU_CHOICE_BUTTON_VIS(5, sd_back, "BACK", close self;, "", 1)
+		MENU_CHOICE_HORIZONTAL_LINE_VIS(4, 1)
+		SD_BUTTON(4, sd_buy, "BUY SUPPLY DROP  -  " + dvarint( "sd_price_drop" ) + " CP", execnow "sd_buy 0";, SD_NOP, "Buy a Supply Drop with COD Points. COD Points come from matches, drops and salvaging.", 1)
+		SD_BUTTON(5, sd_buy_adv, "BUY ADVANCED  -  " + dvarint( "sd_price_adv" ) + " CP", execnow "sd_buy 1";, SD_NOP, "Buy an Advanced Supply Drop with COD Points.", 1)
+
+		MENU_CHOICE_HORIZONTAL_LINE_VIS(6, 1)
+		MENU_CHOICE_BUTTON_VIS(6, sd_back, "BACK", close self;, "", 1)
 
 		SD_HINT
 
@@ -105,8 +107,8 @@
 		SD_CRATE((PX + 52), 70, 0.38, HORIZONTAL_ALIGN_RIGHT, VERTICAL_ALIGN_TOP, 0, 1, 0, 0, 0, 1)
 		SD_TILE((PX + 99), dvarint( "sd_adv" ), "ADVANCED", 1, 0.75, 0.2)
 		SD_CRATE((PX + 145), 70, 0.38, HORIZONTAL_ALIGN_RIGHT, VERTICAL_ALIGN_TOP, 1, 1, 0, 0, 0, 1)
-		SD_TILE((PX + 192), dvarint( "sd_credits" ), "CREDITS", 0.35, 0.75, 1)
-		SD_TEXT((PX + 192), 56, 92, 30, HORIZONTAL_ALIGN_RIGHT, VERTICAL_ALIGN_TOP, 9, 0.55, ITEM_ALIGN_TOP_CENTER, 0.35, 0.75, 1, 0.9, "CR", 1)
+		SD_TILE((PX + 192), dvarint( "sd_credits" ), "COD POINTS", 0.35, 0.75, 1)
+		SD_TEXT((PX + 192), 56, 92, 30, HORIZONTAL_ALIGN_RIGHT, VERTICAL_ALIGN_TOP, 9, 0.55, ITEM_ALIGN_TOP_CENTER, 0.35, 0.75, 1, 0.9, "CP", 1)
 
 		SD_TEXT((PX + 10), 144, (PW - 20), 12, HORIZONTAL_ALIGN_RIGHT, VERTICAL_ALIGN_TOP, UI_FONT_SMALL, 0.26, ITEM_ALIGN_TOP_LEFT, 1, 1, 1, 0.55, "Next Supply Drop in " + dvarstring( "sd_next_drop" ) + " of play", 1)
 
@@ -117,7 +119,7 @@
 		SD_CONTRACT(2, "sd_c2")
 		SD_CONTRACT(3, "sd_c3")
 
-		// What just happened (a purchase, not enough Credits...)
+		// What just happened (a purchase, not enough COD Points...)
 		SD_TEXT((PX + 10), 362, (PW - 20), 14, HORIZONTAL_ALIGN_RIGHT, VERTICAL_ALIGN_TOP, UI_FONT_SMALL, 0.3, ITEM_ALIGN_TOP_CENTER, 1, 1, 1, 1, dvarstring( "sd_msg" ), 1)
 	}
 }

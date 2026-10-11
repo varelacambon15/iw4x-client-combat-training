@@ -1,0 +1,72 @@
+#include "ui/menudef.h"
+#include "ui_mp/main.inc"
+#include "ui_mp/sd.inc"
+
+// Supply Drops: the Weapons Store. Weapons added by mods (supply_drops/weapons.txt), bought with COD Points. A weapon
+// bought is chosen in Create a Class, in the variant step of a stock weapon of its kind, and is used in its place.
+
+#define MENU_NAME					"sd_store"
+#define MENU_TITLE					"WEAPONS STORE"
+#include "ui_mp/sd_menu_common.inc"
+
+#define SD_STORE_ROW(i, buttonName, P, focusCmd) \
+	SD_BUTTON(i, buttonName, dvarstring( P + "_name" ), if ( dvarint( "sd_sf_owned" ) == 0 ) { open sd_buy_popup; }, execnow focusCmd;, "Buy it with COD Points. Then choose it in Create a Class, when you pick a weapon of its kind.", when( dvarstring( P + "_name" ) != "" )) \
+	SD_ROW_TAG(i, dvarstring( P + "_tag" ), 1, 0.85, 0.4, when( dvarstring( P + "_name" ) != "" ))
+
+{
+	menuDef
+	{
+		name						MENU_NAME
+		fullscreen					1
+		rect						0 0 640 480
+		foreColor					CHOICE_TEXTCOLOR
+		focusColor					CHOICE_TEXTCOLOR
+		soundLoop					"music_mainmenu_mp"
+		fadeCycle					1
+		fadeClamp					1
+		fadeAmount					0.1
+
+		onOpen
+		{
+			setLocalVarString ui_hint_text "";
+			setfocus "sd_sw_0";
+			execnow "sd_sfocus 0";
+		}
+		onEsc
+		{
+			close self;
+		}
+
+		#define BACKGROUND_IW4
+		#include "ui_mp/bg.inc"
+
+		MENU_CHOICE_TITLE_VIS(MENU_TITLE, 58, 1)
+		SD_TEXT(0, 80, 212, 14, HORIZONTAL_ALIGN_LEFT, VERTICAL_ALIGN_TOP, UI_FONT_SMALL, 0.3, ITEM_ALIGN_TOP_RIGHT, 0.35, 0.75, 1, 1, dvarint( "sd_credits" ) + " COD POINTS", 1)
+
+		SD_STORE_ROW(0, sd_sw_0, "sd_sw0", "sd_sfocus 0")
+		SD_STORE_ROW(1, sd_sw_1, "sd_sw1", "sd_sfocus 1")
+		SD_STORE_ROW(2, sd_sw_2, "sd_sw2", "sd_sfocus 2")
+		SD_STORE_ROW(3, sd_sw_3, "sd_sw3", "sd_sfocus 3")
+		SD_STORE_ROW(4, sd_sw_4, "sd_sw4", "sd_sfocus 4")
+		SD_STORE_ROW(5, sd_sw_5, "sd_sw5", "sd_sfocus 5")
+		SD_STORE_ROW(6, sd_sw_6, "sd_sw6", "sd_sfocus 6")
+		SD_STORE_ROW(7, sd_sw_7, "sd_sw7", "sd_sfocus 7")
+		SD_STORE_ROW(8, sd_sw_8, "sd_sw8", "sd_sfocus 8")
+		SD_STORE_ROW(9, sd_sw_9, "sd_sw9", "sd_sfocus 9")
+
+		// No weapons installed
+		SD_TEXT(0, CHOICE_Y(0), 212, 60, HORIZONTAL_ALIGN_LEFT, VERTICAL_ALIGN_TOP, UI_FONT_SMALL, 0.32, ITEM_ALIGN_TOP_RIGHT, 1, 1, 1, 0.7, "No new weapons installed.", when( dvarint( "sd_sw_count" ) == 0 ))
+
+		MENU_CHOICE_HORIZONTAL_LINE_VIS(10, 1)
+		SD_BUTTON(10, sd_sw_next, "NEXT PAGE  (" + dvarstring( "sd_sw_page" ) + ")", execnow "sd_store 1"; setfocus "sd_sw_0"; execnow "sd_sfocus 0";, SD_NOP, "", when( dvarint( "sd_sw_pages" ) > 1 ))
+		MENU_CHOICE_BUTTON_VIS(11, sd_sw_back, "BACK", close self;, "", 1)
+
+		SD_HINT
+
+		// --- The weapon in focus ------------------------------------------------------------------------------------
+		SD_RECT(PX, 28, PW, 356, HORIZONTAL_ALIGN_RIGHT, VERTICAL_ALIGN_TOP, 0, 0, 0, 0.7, when( dvarint( "sd_sw_count" ) > 0 ))
+		SD_CARD("sd_sf", (PX + 5), 30, 280, HORIZONTAL_ALIGN_RIGHT, VERTICAL_ALIGN_TOP, 1, 0, when( dvarint( "sd_sw_count" ) > 0 ))
+
+		SD_MESSAGE
+	}
+}

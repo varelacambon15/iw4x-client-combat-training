@@ -9,7 +9,7 @@
 #include "ui_mp/sd_menu_common.inc"
 
 #define SD_VARIANT_ROW(i, buttonName, P, focusCmd) \
-	SD_BUTTON(i, buttonName, dvarstring( P + "_name" ), open sd_item_popup;, execnow focusCmd;, "Equip it, so that it is used whenever you use this weapon, or salvage it for Credits.", when( dvarstring( P + "_name" ) != "" )) \
+	SD_BUTTON(i, buttonName, dvarstring( P + "_name" ), open sd_item_popup;, execnow focusCmd;, "Equip it, so that it is used whenever you use this weapon, or salvage it for COD Points.", when( dvarstring( P + "_name" ) != "" )) \
 	SD_ROW_TAG(i, "EQUIPPED", 0.45, 1, 0.45, when( dvarstring( P + "_name" ) != "" && dvarint( P + "_eq" ) ))
 
 {

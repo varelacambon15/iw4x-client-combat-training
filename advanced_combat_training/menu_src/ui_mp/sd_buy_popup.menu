@@ -1,0 +1,39 @@
+#include "ui/menudef.h"
+#include "ui_mp/main.inc"
+#include "ui_mp/sd.inc"
+
+// Supply Drops: buying the weapon in focus in the Weapons Store (its card is sd_sf)
+
+{
+	menuDef
+	{
+		name						"sd_buy_popup"
+		rect						0 0 640 480 HORIZONTAL_ALIGN_FULLSCREEN VERTICAL_ALIGN_FULLSCREEN
+		style						WINDOW_STYLE_EMPTY
+		popup
+		foreColor					1 1 1 1
+		focusColor					1 1 1 1
+		fadeCycle					1
+		fadeClamp					1
+		fadeAmount					0.1
+
+		onOpen
+		{
+			setfocus "sd_bp_cancel";
+		}
+		onEsc
+		{
+			close self;
+		}
+
+		SD_RECT(0, 0, 640, 480, HORIZONTAL_ALIGN_FULLSCREEN, VERTICAL_ALIGN_FULLSCREEN, 0, 0, 0, 0.6, 1)
+		SD_RECT((0 - 140), (0 - 78), 280, 150, HORIZONTAL_ALIGN_CENTER, VERTICAL_ALIGN_CENTER, 0.05, 0.055, 0.06, 0.97, 1)
+		SD_RECT((0 - 140), (0 - 78), 280, 3, HORIZONTAL_ALIGN_CENTER, VERTICAL_ALIGN_CENTER, 1, 0.74, 0.2, 1, 1)
+		SD_TEXT((0 - 130), (0 - 70), 260, 20, HORIZONTAL_ALIGN_CENTER, VERTICAL_ALIGN_CENTER, 9, 0.42, ITEM_ALIGN_TOP_CENTER, 1, 1, 1, 1, "BUY " + dvarstring( "sd_sf_weapon" ), 1)
+		SD_TEXT((0 - 130), (0 - 48), 260, 14, HORIZONTAL_ALIGN_CENTER, VERTICAL_ALIGN_CENTER, UI_FONT_SMALL, 0.3, ITEM_ALIGN_TOP_CENTER, 0.35, 0.75, 1, 1, dvarint( "sd_sf_price" ) + " CP   ^7(you have " + dvarint( "sd_credits" ) + ")", 1)
+
+		SD_CENTER_BUTTON("sd_bp_buy", (0 - 26), "BUY", execnow "sd_sbuy"; close self;, 1)
+		SD_CENTER_BUTTON("sd_bp_cancel", (0 - 2), "CANCEL", close self;, 1)
+		SD_TEXT((0 - 130), 30, 260, 30, HORIZONTAL_ALIGN_CENTER, VERTICAL_ALIGN_CENTER, UI_FONT_SMALL, 0.26, ITEM_ALIGN_TOP_CENTER, 1, 1, 1, 0.55, "Then, in Create a Class, pick a " + dvarstring( "sd_sf_category" ) + " and choose it in its place.", 1)
+	}
+}

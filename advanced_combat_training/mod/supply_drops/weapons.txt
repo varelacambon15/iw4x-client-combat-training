@@ -1,0 +1,18 @@
+// Advanced Combat Training: weapons added by mods, sold in the Weapons Store for COD Points.
+// A weapon bought is chosen in Create a Class, in the variant step of a stock weapon of the same category, and is used
+// in its place (without attachments). Only the ones installed (weapons/mp/<ref>_mp) show up.
+//
+// ref | name | category (assault smg lmg sniper shotgun mpistol pistol) | price | picture | accuracy damage range firerate mobility
+
+// MONACO (github.com/simonlfc/MONACO), downloaded by the installer
+hdr       | HDR           | sniper | 2500 | hud_hdr       | 88 92 100 20 95
+ax50      | AX-50         | sniper | 2500 | hud_ax50      | 85 95 100 25 95
+spr       | SP-R 208      | sniper | 2500 | hud_spr       | 90 85 100 30 100
+kar98     | Kar98k        | sniper | 2500 | hud_kar98     | 80 80 90 45 100
+mk2       | MK2 Carbine   | sniper | 2500 | hud_mk2       | 75 75 70 55 100
+tundra    | LW3 Tundra    | sniper | 2500 | hud_tundra    | 86 90 100 25 100
+pelington | Pelington 703 | sniper | 2500 | hud_pelington | 85 88 100 30 100
+zrg       | ZRG 20mm      | sniper | 2500 | hud_zrg       | 70 100 100 15 85
+swiss     | Swiss K31     | sniper | 2500 | hud_swiss     | 80 80 90 40 100
+type99    | Type 99       | sniper | 2500 | hud_type99    | 82 82 90 40 100
+3line     | 3-Line Rifle  | sniper | 2500 | hud_3line     | 82 85 95 30 100

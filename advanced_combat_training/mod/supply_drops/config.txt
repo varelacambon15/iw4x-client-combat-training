@@ -1,27 +1,28 @@
 // Advanced Combat Training: Supply Drops settings. Change the numbers to tune the pace and the economy.
-// (Read when you open SUPPLY DROPS in the main menu.)
+// (Read when you open SUPPLY DROPS in the main menu.) The prices of the new weapons are in weapons.txt.
 
 // --- Earning drops ---
-minutes_per_drop = 30              // minutes played in matches for a Supply Drop
-drops_per_level = 1                // Supply Drops for each level gained
+minutes_per_drop = 45              // minutes played in matches for a Supply Drop
+drops_per_level = 1                // Supply Drops for a level...
+levels_per_drop = 5                // ...every this many levels
 advanced_per_prestige = 2          // Advanced Supply Drops for each prestige
 first_win_of_day_drops = 1         // Supply Drops for the first win of the day
 daily_contracts = 3                // daily contracts, a Supply Drop each
 weekly_contract_advanced = 1       // the weekly contract gives this many Advanced Supply Drops
 
-// --- Credits ---
-salvage_enlisted = 10
-salvage_professional = 30
-salvage_elite = 100
-match_credits_top = 15             // end of a match, top of the scoreboard
-match_credits_middle = 8
-match_credits_bottom = 4
-price_drop = 120                   // Store
-price_advanced = 350
+// --- COD Points ---
+salvage_enlisted = 20
+salvage_professional = 50
+salvage_elite = 150
+match_credits_top = 40             // end of a match, top of the scoreboard
+match_credits_middle = 25
+match_credits_bottom = 15
+price_drop = 250                   // Store
+price_advanced = 600
 
 // --- What comes out of a drop ---
 items_per_drop = 3                 // variants in each drop (1 to 3)
-bonus_credits_per_drop = 10
+bonus_credits_per_drop = 15
 
 // Chance of each rarity, in percent. An Advanced drop always has one Professional or better.
 chance_elite = 8
