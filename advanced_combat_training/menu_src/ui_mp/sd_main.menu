@@ -1,0 +1,123 @@
+#include "ui/menudef.h"
+#include "ui_mp/main.inc"
+#include "ui_mp/sd.inc"
+
+// Supply Drops: open drops, the Armory, the Store and the Contracts (SupplyDrops.cpp fills the sd_* dvars)
+
+#define MENU_NAME					"sd_main"
+#define MENU_MUSIC					"music_mainmenu_mp"
+#define MENU_TITLE					"SUPPLY DROPS"
+
+#undef CHOICE_GROUP
+#define CHOICE_GROUP				MENU_NAME
+
+#undef TEXTSIZE_TITLE
+#define TEXTSIZE_TITLE				FONTSCALE_BIG
+
+#define CHOICE_Y(i)					(88 + (i * 20))
+#define CHOICE_ORIGIN(i)			-64 CHOICE_Y(i)
+#define CHOICE_RECT(i)				CHOICE_ORIGIN(i) 336 20 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_TOP
+
+#define HR_ORIGIN(i)				0 (CHOICE_Y(i) - 0.5)
+#define HR_RECT(i)					HR_ORIGIN(i) 216 1 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_TOP
+
+// The panel on the right
+#define PX							(0 - 300)
+#define PW							290
+
+// An inventory tile: a count and what it counts
+#define SD_TILE(x, countExpr, labelArg, r, g, b) \
+	SD_RECT(x, 46, 92, 92, HORIZONTAL_ALIGN_RIGHT, VERTICAL_ALIGN_TOP, 1, 1, 1, 0.06, 1) \
+	SD_RECT(x, 136, 92, 2, HORIZONTAL_ALIGN_RIGHT, VERTICAL_ALIGN_TOP, r, g, b, 0.9, 1) \
+	SD_TEXT(x, 96, 92, 20, HORIZONTAL_ALIGN_RIGHT, VERTICAL_ALIGN_TOP, 9, 0.45, ITEM_ALIGN_TOP_CENTER, 1, 1, 1, 1, countExpr, 1) \
+	SD_TEXT(x, 120, 92, 12, HORIZONTAL_ALIGN_RIGHT, VERTICAL_ALIGN_TOP, UI_FONT_SMALL, 0.26, ITEM_ALIGN_TOP_CENTER, r, g, b, 1, labelArg, 1)
+
+// A contract: its kind, what to do, a progress bar and the reward
+#define SD_CONTRACT(i, P) \
+	SD_TEXT((PX + 10), (176 + i * 46), 60, 12, HORIZONTAL_ALIGN_RIGHT, VERTICAL_ALIGN_TOP, UI_FONT_SMALL, 0.26, ITEM_ALIGN_TOP_LEFT, 1, 0.75, 0.2, 1, dvarstring( P + "_kind" ), when( dvarstring( P + "_text" ) != "" )) \
+	SD_TEXT((PX + 10), (176 + i * 46), (PW - 20), 12, HORIZONTAL_ALIGN_RIGHT, VERTICAL_ALIGN_TOP, UI_FONT_SMALL, 0.26, ITEM_ALIGN_TOP_RIGHT, 1, 1, 1, 0.6, dvarstring( P + "_reward" ), when( dvarstring( P + "_text" ) != "" )) \
+	SD_TEXT((PX + 10), (188 + i * 46), (PW - 20), 14, HORIZONTAL_ALIGN_RIGHT, VERTICAL_ALIGN_TOP, UI_FONT_SMALL, 0.32, ITEM_ALIGN_TOP_LEFT, 1, 1, 1, 1, dvarstring( P + "_text" ), when( dvarstring( P + "_text" ) != "" )) \
+	SD_RECT((PX + 10), (206 + i * 46), (PW - 90), 4, HORIZONTAL_ALIGN_RIGHT, VERTICAL_ALIGN_TOP, 1, 1, 1, 0.12, when( dvarstring( P + "_text" ) != "" )) \
+	itemDef \
+	{ \
+		rect				(PX + 10) (206 + i * 46) (PW - 90) 4 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP \
+		style				WINDOW_STYLE_SHADER \
+		background			"white" \
+		forecolor			1 0.75 0.2 1 \
+		decoration \
+		visible				when( dvarstring( P + "_text" ) != "" ) \
+		exp					rect w ( ( PW - 90 ) * dvarint( P + "_frac" ) / 100 ) \
+		exp					forecolor r ( 1 - dvarint( P + "_done" ) * 0.6 ) \
+		exp					forecolor g ( 0.75 + dvarint( P + "_done" ) * 0.15 ) \
+		exp					forecolor b ( 0.2 + dvarint( P + "_done" ) * 0.1 ) \
+	} \
+	SD_TEXT((PX + 10), (202 + i * 46), (PW - 20), 12, HORIZONTAL_ALIGN_RIGHT, VERTICAL_ALIGN_TOP, UI_FONT_SMALL, 0.26, ITEM_ALIGN_TOP_RIGHT, 1, 1, 1, 0.8, dvarstring( P + "_prog" ), when( dvarstring( P + "_text" ) != "" ))
+
+{
+	menuDef
+	{
+		name						MENU_NAME
+		fullscreen					1
+		rect						0 0 640 480
+		foreColor					CHOICE_TEXTCOLOR
+		focusColor					CHOICE_TEXTCOLOR
+		soundLoop					MENU_MUSIC
+		fadeCycle					1
+		fadeClamp					1
+		fadeAmount					0.1
+
+		onOpen
+		{
+			execnow "sd_refresh";
+			setLocalVarString ui_hint_text "";
+		}
+		onEsc
+		{
+			close self;
+		}
+
+		#define BACKGROUND_IW4
+		#include "ui_mp/bg.inc"
+
+		MENU_CHOICE_TITLE_VIS(MENU_TITLE, 58, 1)
+
+		SD_BUTTON(0, sd_open, "OPEN SUPPLY DROP  (" + dvarint( "sd_drops" ) + ")", if ( dvarint( "sd_drops" ) > 0 ) { execnow "sd_open 0"; setLocalVarInt ui_sd_t0 ( milliseconds( ) ); open sd_reveal; } else { setdvar sd_msg "^1No Supply Drops to open."; }, SD_NOP, "Three weapon variants and Credits. Earn more by playing, levelling up and completing contracts.", 1)
+		SD_BUTTON(1, sd_open_adv, "OPEN ADVANCED SUPPLY DROP  (" + dvarint( "sd_adv" ) + ")", if ( dvarint( "sd_adv" ) > 0 ) { execnow "sd_open 1"; setLocalVarInt ui_sd_t0 ( milliseconds( ) ); open sd_reveal; } else { setdvar sd_msg "^1No Advanced Supply Drops to open."; }, SD_NOP, "Better odds: at least one Professional or Elite variant. Earned by prestige and weekly contracts.", 1)
+
+		MENU_CHOICE_HORIZONTAL_LINE_VIS(2, 1)
+		SD_BUTTON(2, sd_armory, "ARMORY  (" + dvarint( "sd_items" ) + ")", execnow "sd_armory"; open sd_armory;, SD_NOP, "Your variants: equip one for each weapon, or salvage them for Credits.", 1)
+
+		MENU_CHOICE_HORIZONTAL_LINE_VIS(3, 1)
+		SD_BUTTON(3, sd_buy, "BUY SUPPLY DROP  -  " + dvarint( "sd_price_drop" ) + " CR", execnow "sd_buy 0";, SD_NOP, "Buy a Supply Drop with Credits. Credits come from matches, drops and salvaging.", 1)
+		SD_BUTTON(4, sd_buy_adv, "BUY ADVANCED  -  " + dvarint( "sd_price_adv" ) + " CR", execnow "sd_buy 1";, SD_NOP, "Buy an Advanced Supply Drop with Credits.", 1)
+
+		MENU_CHOICE_HORIZONTAL_LINE_VIS(5, 1)
+		MENU_CHOICE_BUTTON_VIS(5, sd_back, "BACK", close self;, "", 1)
+
+		SD_HINT
+
+		// --- The panel: inventory, contracts --------------------------------------------------------------------
+		SD_RECT(PX, 28, PW, 356, HORIZONTAL_ALIGN_RIGHT, VERTICAL_ALIGN_TOP, 0, 0, 0, 0.7, 1)
+		SD_RECT(PX, 28, PW, 2, HORIZONTAL_ALIGN_RIGHT, VERTICAL_ALIGN_TOP, 1, 0.75, 0.2, 0.9, 1)
+		SD_TEXT((PX + 10), 32, (PW - 20), 14, HORIZONTAL_ALIGN_RIGHT, VERTICAL_ALIGN_TOP, UI_FONT_SMALL, 0.3, ITEM_ALIGN_TOP_LEFT, 1, 1, 1, 0.6, "INVENTORY", 1)
+
+		SD_TILE((PX + 6), dvarint( "sd_drops" ), "SUPPLY DROPS", 0.75, 0.75, 0.7)
+		SD_CRATE((PX + 52), 70, 0.38, HORIZONTAL_ALIGN_RIGHT, VERTICAL_ALIGN_TOP, 0, 1, 0, 0, 0, 1)
+		SD_TILE((PX + 99), dvarint( "sd_adv" ), "ADVANCED", 1, 0.75, 0.2)
+		SD_CRATE((PX + 145), 70, 0.38, HORIZONTAL_ALIGN_RIGHT, VERTICAL_ALIGN_TOP, 1, 1, 0, 0, 0, 1)
+		SD_TILE((PX + 192), dvarint( "sd_credits" ), "CREDITS", 0.35, 0.75, 1)
+		SD_TEXT((PX + 192), 56, 92, 30, HORIZONTAL_ALIGN_RIGHT, VERTICAL_ALIGN_TOP, 9, 0.55, ITEM_ALIGN_TOP_CENTER, 0.35, 0.75, 1, 0.9, "CR", 1)
+
+		SD_TEXT((PX + 10), 144, (PW - 20), 12, HORIZONTAL_ALIGN_RIGHT, VERTICAL_ALIGN_TOP, UI_FONT_SMALL, 0.26, ITEM_ALIGN_TOP_LEFT, 1, 1, 1, 0.55, "Next Supply Drop in " + dvarstring( "sd_next_drop" ) + " of play", 1)
+
+		SD_RECT((PX + 10), 160, (PW - 20), 1, HORIZONTAL_ALIGN_RIGHT, VERTICAL_ALIGN_TOP, 1, 1, 1, 0.2, 1)
+		SD_TEXT((PX + 10), 162, (PW - 20), 14, HORIZONTAL_ALIGN_RIGHT, VERTICAL_ALIGN_TOP, UI_FONT_SMALL, 0.3, ITEM_ALIGN_TOP_LEFT, 1, 1, 1, 0.6, "CONTRACTS", 1)
+		SD_CONTRACT(0, "sd_c0")
+		SD_CONTRACT(1, "sd_c1")
+		SD_CONTRACT(2, "sd_c2")
+		SD_CONTRACT(3, "sd_c3")
+
+		// What just happened (a purchase, not enough Credits...)
+		SD_TEXT((PX + 10), 362, (PW - 20), 14, HORIZONTAL_ALIGN_RIGHT, VERTICAL_ALIGN_TOP, UI_FONT_SMALL, 0.3, ITEM_ALIGN_TOP_CENTER, 1, 1, 1, 1, dvarstring( "sd_msg" ), 1)
+	}
+}

@@ -1,0 +1,138 @@
+#include "ui/menudef.h"
+#include "ui_mp/main.inc"
+#include "ui_mp/sd.inc"
+
+// Supply Drops: opening a drop. The crate shakes, opens in the colour of the best variant inside, and the variants
+// come out one by one, the best one last. sd_main runs "sd_open" and sets ui_sd_t0 before opening this menu.
+
+#define MENU_NAME					"sd_reveal"
+
+// Milliseconds since the drop was opened
+#define T							float( milliseconds( ) - localvarint( "ui_sd_t0" ) )
+
+#define T_OPEN						1300
+#define T_CARDS						1900
+#define T_CARD_STEP					650
+#define T_END						( T_CARDS + T_CARD_STEP * ( dvarint( "sd_rv_count" ) - 1 ) + 500 )
+
+#define BEST						dvarint( "sd_rv_best" )
+
+#define CARD_W						180
+#define CARD_Y						(0 - 168)
+
+// A card: it comes up and fades in at its time, with a flash in its colour
+#define SD_REVEAL_CARD(i, P, X) \
+	SD_CARD(P, X, CARD_Y, CARD_W, HORIZONTAL_ALIGN_CENTER, VERTICAL_ALIGN_CENTER, SD_CLAMP01( ( T - ( T_CARDS + i * T_CARD_STEP ) ) / 350 ), ( 40 * ( 1 - SD_CLAMP01( ( T - ( T_CARDS + i * T_CARD_STEP ) ) / 350 ) ) ), when( dvarint( P + "_on" ) && T > ( T_CARDS + i * T_CARD_STEP ) )) \
+	itemDef \
+	{ \
+		rect				X CARD_Y CARD_W SD_CARD_H(CARD_W) HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER \
+		style				WINDOW_STYLE_SHADER \
+		background			"white" \
+		forecolor			1 1 1 0 \
+		decoration \
+		visible				when( dvarint( P + "_on" ) && T > ( T_CARDS + i * T_CARD_STEP ) && T < ( T_CARDS + i * T_CARD_STEP + 900 ) ) \
+		exp					forecolor r ( SD_COLOR_R(P) ) \
+		exp					forecolor g ( SD_COLOR_G(P) ) \
+		exp					forecolor b ( SD_COLOR_B(P) ) \
+		exp					forecolor a ( ( 0.35 + 0.35 * ( dvarint( P + "_rarity" ) == 2 ) ) * SD_CLAMP01( 1 - ( T - ( T_CARDS + i * T_CARD_STEP ) ) / 900 ) ) \
+	}
+
+{
+	menuDef
+	{
+		name						MENU_NAME
+		fullscreen					1
+		rect						0 0 640 480
+		foreColor					1 1 1 1
+		focusColor					1 1 1 1
+		soundLoop					"music_mainmenu_mp"
+		fadeCycle					1
+		fadeClamp					1
+		fadeAmount					0.1
+
+		onOpen
+		{
+			setfocus "sd_rv_continue";
+			play "mp_level_up";
+		}
+		onEsc
+		{
+			close self;
+		}
+
+		// --- Background ---------------------------------------------------------------------------------------------
+		SD_RECT(0, 0, 640, 480, HORIZONTAL_ALIGN_FULLSCREEN, VERTICAL_ALIGN_FULLSCREEN, 0.03, 0.035, 0.04, 1, 1)
+		itemDef
+		{
+			rect					0 0 1280 480 HORIZONTAL_ALIGN_FULLSCREEN VERTICAL_ALIGN_FULLSCREEN
+			style					WINDOW_STYLE_SHADER
+			forecolor				1 1 1 0.35
+			background				"mw2_popup_bg_fogscroll"
+			decoration
+			visible					1
+			exp						rect x ( 0 - ( ( float( milliseconds( ) % 60000 ) / 60000 ) * 640 ) )
+		}
+		// The glow of the best variant, from the moment the crate opens
+		itemDef
+		{
+			rect					(0 - 427) (0 - 140) 854 280 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER
+			style					WINDOW_STYLE_SHADER
+			background				"white"
+			forecolor				1 1 1 0
+			decoration
+			visible					1
+			exp						forecolor r ( SD_COLOR_R("sd_rv_best") )
+			exp						forecolor g ( SD_COLOR_G("sd_rv_best") )
+			exp						forecolor b ( SD_COLOR_B("sd_rv_best") )
+			exp						forecolor a ( 0.12 * SD_CLAMP01( ( T - T_OPEN ) / 500 ) )
+		}
+
+		// --- Title ------------------------------------------------------------------------------------------------
+		SD_TEXT((0 - 300), (0 - 222), 600, 30, HORIZONTAL_ALIGN_CENTER, VERTICAL_ALIGN_CENTER, 9, 0.6, ITEM_ALIGN_TOP_CENTER, 1, 1, 1, 1, dvarstring( "sd_rv_title" ), 1)
+		SD_RECT((0 - 120), (0 - 190), 240, 2, HORIZONTAL_ALIGN_CENTER, VERTICAL_ALIGN_CENTER, 1, 0.75, 0.2, 0.8, 1)
+
+		// --- The crate ------------------------------------------------------------------------------------------
+		// A beam of light in the colour of the best variant when the lid comes off
+		itemDef
+		{
+			rect					(0 - 30) (0 - 240) 60 230 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER
+			style					WINDOW_STYLE_SHADER
+			background				"white"
+			forecolor				1 1 1 0
+			decoration
+			visible					when( T > ( T_OPEN - 200 ) && T < T_CARDS )
+			exp						rect x ( 0 - 4 - 40 * SD_CLAMP01( ( T - T_OPEN + 200 ) / 400 ) )
+			exp						rect w ( 8 + 80 * SD_CLAMP01( ( T - T_OPEN + 200 ) / 400 ) )
+			exp						forecolor r ( SD_COLOR_R("sd_rv_best") )
+			exp						forecolor g ( SD_COLOR_G("sd_rv_best") )
+			exp						forecolor b ( SD_COLOR_B("sd_rv_best") )
+			exp						forecolor a ( 0.7 * SD_CLAMP01( ( T - T_OPEN + 200 ) / 300 ) * SD_CLAMP01( ( T_CARDS - T ) / 300 ) )
+		}
+		SD_CRATE(0, 20, 1.6, HORIZONTAL_ALIGN_CENTER, VERTICAL_ALIGN_CENTER, dvarint( "sd_rv_adv" ), SD_CLAMP01( ( T_CARDS - T ) / 300 ), ( sin( T * 0.07 ) * ( T < T_OPEN ) * 4 * T / T_OPEN ), 0, ( ( T > T_OPEN ) * ( T - T_OPEN ) * 0.35 ), when( T < T_CARDS ))
+
+		// The flash when it opens
+		itemDef
+		{
+			rect					0 0 640 480 HORIZONTAL_ALIGN_FULLSCREEN VERTICAL_ALIGN_FULLSCREEN
+			style					WINDOW_STYLE_SHADER
+			background				"white"
+			forecolor				1 1 1 0
+			decoration
+			visible					when( T > ( T_OPEN + 250 ) && T < ( T_OPEN + 900 ) )
+			exp						forecolor a ( 0.85 * SD_CLAMP01( 1 - ( T - T_OPEN - 250 ) / 650 ) )
+		}
+
+		// --- The variants -----------------------------------------------------------------------------------------
+		SD_REVEAL_CARD(0, "sd_rv0", (0 - 285))
+		SD_REVEAL_CARD(1, "sd_rv1", (0 - 90))
+		SD_REVEAL_CARD(2, "sd_rv2", 105)
+
+		// The Credits that came with it
+		SD_TEXT((0 - 300), 148, 600, 18, HORIZONTAL_ALIGN_CENTER, VERTICAL_ALIGN_CENTER, 9, 0.4, ITEM_ALIGN_TOP_CENTER, 0.35, 0.75, 1, 1, dvarstring( "sd_rv_bonus" ) + "      ^7Equip your variants in the Armory or in Create a Class", when( T > T_END ))
+
+		// --- Buttons: continue (skips the animation while it plays), open another of the same kind -----------------
+		SD_CENTER_BUTTON("sd_rv_continue", 176, "CONTINUE", if ( T < T_END ) { setLocalVarInt ui_sd_t0 ( milliseconds( ) - 20000 ); } else { close self; }, 1)
+		SD_CENTER_BUTTON("sd_rv_again", 200, "OPEN ANOTHER", execnow "sd_open 0"; setLocalVarInt ui_sd_t0 ( milliseconds( ) ); setfocus "sd_rv_continue";, when( T > T_END && dvarint( "sd_rv_adv" ) == 0 && dvarint( "sd_drops" ) > 0 ))
+		SD_CENTER_BUTTON("sd_rv_again_adv", 200, "OPEN ANOTHER", execnow "sd_open 1"; setLocalVarInt ui_sd_t0 ( milliseconds( ) ); setfocus "sd_rv_continue";, when( T > T_END && dvarint( "sd_rv_adv" ) == 1 && dvarint( "sd_adv" ) > 0 ))
+	}
+}

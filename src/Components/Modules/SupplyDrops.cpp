@@ -64,6 +64,9 @@ namespace Components
     constexpr const char* RARITIES[] = { "enlisted", "professional", "elite" };
     constexpr const char* RARITY_NAMES[] = { "ENLISTED", "PROFESSIONAL", "ELITE" };
     constexpr const char* RARITY_COLORS[] = { "^2", "^5", "^3" };
+    // The colour of each rarity in the menus, in percent (r, g, b), and of a base weapon
+    constexpr int RARITY_RGB[][3] = { { 47, 86, 38 }, { 32, 64, 100 }, { 100, 74, 20 } };
+    constexpr int BASE_RGB[3] = { 62, 62, 62 };
 
     constexpr const char* CONTRACT_TYPES[] =
     {
@@ -146,6 +149,15 @@ namespace Components
     void SetDvar(const std::string& name, int value)
     {
       SetDvar(name, std::to_string(value));
+    }
+
+    // <prefix>_cr, _cg, _cb: the colour the menus draw a rarity in (-1: a base weapon)
+    void SetColorDvars(const std::string& prefix, int rarity)
+    {
+      const auto* rgb = rarity < 0 ? BASE_RGB : RARITY_RGB[std::clamp(rarity, 0, 2)];
+      SetDvar(prefix + "_cr", rgb[0]);
+      SetDvar(prefix + "_cg", rgb[1]);
+      SetDvar(prefix + "_cb", rgb[2]);
     }
 
     // ------------------------------------------------------------------------------------------------------------
@@ -583,6 +595,7 @@ namespace Components
       {
         SetDvar(p + "_name", "Standard Issue");
         SetDvar(p + "_rarity", -1);
+        SetColorDvars(p, -1);
         SetDvar(p + "_rname", "BASE WEAPON");
         SetDvar(p + "_ddmg", 0);
         SetDvar(p + "_drng", 0);
@@ -601,6 +614,7 @@ namespace Components
       const auto rarity = RarityIndex(item->rarity);
       SetDvar(p + "_name", item->name);
       SetDvar(p + "_rarity", rarity);
+      SetColorDvars(p, rarity);
       SetDvar(p + "_rname", RARITY_NAMES[rarity]);
       // The bars are 0..100: one point of the variant is two of the bar, so that it can be seen
       SetDvar(p + "_ddmg", item->Mod("dmg") * 2);
@@ -734,6 +748,7 @@ namespace Components
       SetDvar("sd_rv_adv", advanced ? 1 : 0);
       SetDvar("sd_rv_title", advanced ? "ADVANCED SUPPLY DROP" : "SUPPLY DROP");
       SetDvar("sd_rv_best", best);
+      SetColorDvars("sd_rv_best", best);
       SetDvar("sd_rv_bonus", std::format("+{} CREDITS", bonus));
       PublishMain();
     }

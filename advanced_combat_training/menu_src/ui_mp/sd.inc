@@ -6,6 +6,11 @@
 #define SD_RARITY_G(v)		( ( ( v ) == 0 ) * 0.86 + ( ( v ) == 1 ) * 0.64 + ( ( v ) == 2 ) * 0.74 + ( ( v ) < 0 ) * 0.62 )
 #define SD_RARITY_B(v)		( ( ( v ) == 0 ) * 0.38 + ( ( v ) == 1 ) * 1.0 + ( ( v ) == 2 ) * 0.2 + ( ( v ) < 0 ) * 0.62 )
 
+// The colour of a card's rarity, set by the game as percentages (<prefix>_cr, _cg, _cb)
+#define SD_COLOR_R(P)		( dvarint( P + "_cr" ) / 100.0 )
+#define SD_COLOR_G(P)		( dvarint( P + "_cg" ) / 100.0 )
+#define SD_COLOR_B(P)		( dvarint( P + "_cb" ) / 100.0 )
+
 // 0..1 without max(): x when 0 < x < 1
 #define SD_CLAMP01(x)		min( 1 , ( x ) * ( ( x ) > 0 ) )
 
@@ -182,9 +187,9 @@
 		decoration \
 		visible				visArg \
 		exp					rect y ( Y + DY ) \
-		exp					forecolor r ( SD_RARITY_R( SD_CARD_RARITY(P) ) ) \
-		exp					forecolor g ( SD_RARITY_G( SD_CARD_RARITY(P) ) ) \
-		exp					forecolor b ( SD_RARITY_B( SD_CARD_RARITY(P) ) ) \
+		exp					forecolor r ( SD_COLOR_R(P) ) \
+		exp					forecolor g ( SD_COLOR_G(P) ) \
+		exp					forecolor b ( SD_COLOR_B(P) ) \
 		exp					forecolor a ( 0.16 * ( A ) ) \
 	} \
 	itemDef \
@@ -196,9 +201,9 @@
 		decoration \
 		visible				visArg \
 		exp					rect y ( Y + DY ) \
-		exp					forecolor r ( SD_RARITY_R( SD_CARD_RARITY(P) ) ) \
-		exp					forecolor g ( SD_RARITY_G( SD_CARD_RARITY(P) ) ) \
-		exp					forecolor b ( SD_RARITY_B( SD_CARD_RARITY(P) ) ) \
+		exp					forecolor r ( SD_COLOR_R(P) ) \
+		exp					forecolor g ( SD_COLOR_G(P) ) \
+		exp					forecolor b ( SD_COLOR_B(P) ) \
 		exp					forecolor a ( A ) \
 	} \
 	itemDef \
@@ -210,9 +215,9 @@
 		decoration \
 		visible				visArg \
 		exp					rect y ( Y + SD_CARD_H(W) - 2 + DY ) \
-		exp					forecolor r ( SD_RARITY_R( SD_CARD_RARITY(P) ) ) \
-		exp					forecolor g ( SD_RARITY_G( SD_CARD_RARITY(P) ) ) \
-		exp					forecolor b ( SD_RARITY_B( SD_CARD_RARITY(P) ) ) \
+		exp					forecolor r ( SD_COLOR_R(P) ) \
+		exp					forecolor g ( SD_COLOR_G(P) ) \
+		exp					forecolor b ( SD_COLOR_B(P) ) \
 		exp					forecolor a ( 0.6 * ( A ) ) \
 	} \
 	itemDef \
@@ -226,9 +231,9 @@
 		visible				visArg \
 		exp					text ( dvarstring( P + "_rname" ) ) \
 		exp					rect y ( Y + 9 + DY ) \
-		exp					forecolor r ( SD_RARITY_R( SD_CARD_RARITY(P) ) ) \
-		exp					forecolor g ( SD_RARITY_G( SD_CARD_RARITY(P) ) ) \
-		exp					forecolor b ( SD_RARITY_B( SD_CARD_RARITY(P) ) ) \
+		exp					forecolor r ( SD_COLOR_R(P) ) \
+		exp					forecolor g ( SD_COLOR_G(P) ) \
+		exp					forecolor b ( SD_COLOR_B(P) ) \
 		exp					forecolor a ( A ) \
 	} \
 	itemDef \
@@ -266,9 +271,9 @@
 		visible				visArg \
 		exp					text ( dvarstring( P + "_name" ) ) \
 		exp					rect y ( Y + 30 + SD_CARD_IH(W) + DY ) \
-		exp					forecolor r ( SD_RARITY_R( SD_CARD_RARITY(P) ) ) \
-		exp					forecolor g ( SD_RARITY_G( SD_CARD_RARITY(P) ) ) \
-		exp					forecolor b ( SD_RARITY_B( SD_CARD_RARITY(P) ) ) \
+		exp					forecolor r ( SD_COLOR_R(P) ) \
+		exp					forecolor g ( SD_COLOR_G(P) ) \
+		exp					forecolor b ( SD_COLOR_B(P) ) \
 		exp					forecolor a ( A ) \
 	} \
 	itemDef \

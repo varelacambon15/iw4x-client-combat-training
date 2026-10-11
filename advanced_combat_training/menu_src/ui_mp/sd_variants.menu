@@ -1,0 +1,69 @@
+#include "ui/menudef.h"
+#include "ui_mp/main.inc"
+#include "ui_mp/sd.inc"
+
+// Supply Drops: the variants of one weapon (sd_armory runs "sd_weapon <row>" first)
+
+#define MENU_NAME					"sd_variants"
+#define MENU_TITLE					dvarstring( "sd_av_weapon" )
+#include "ui_mp/sd_menu_common.inc"
+
+#define SD_VARIANT_ROW(i, buttonName, P, focusCmd) \
+	SD_BUTTON(i, buttonName, dvarstring( P + "_name" ), open sd_item_popup;, execnow focusCmd;, "Equip it, so that it is used whenever you use this weapon, or salvage it for Credits.", when( dvarstring( P + "_name" ) != "" )) \
+	SD_ROW_TAG(i, "EQUIPPED", 0.45, 1, 0.45, when( dvarstring( P + "_name" ) != "" && dvarint( P + "_eq" ) ))
+
+{
+	menuDef
+	{
+		name						MENU_NAME
+		fullscreen					1
+		rect						0 0 640 480
+		foreColor					CHOICE_TEXTCOLOR
+		focusColor					CHOICE_TEXTCOLOR
+		soundLoop					"music_mainmenu_mp"
+		fadeCycle					1
+		fadeClamp					1
+		fadeAmount					0.1
+
+		onOpen
+		{
+			setLocalVarString ui_hint_text "";
+			setfocus "sd_av_0";
+			execnow "sd_focus 0";
+		}
+		onClose
+		{
+			execnow "sd_armory 0";
+		}
+		onEsc
+		{
+			close self;
+		}
+
+		#define BACKGROUND_IW4
+		#include "ui_mp/bg.inc"
+
+		MENU_CHOICE_TITLE_VIS(MENU_TITLE, 58, 1)
+
+		SD_VARIANT_ROW(0, sd_av_0, "sd_av0", "sd_focus 0")
+		SD_VARIANT_ROW(1, sd_av_1, "sd_av1", "sd_focus 1")
+		SD_VARIANT_ROW(2, sd_av_2, "sd_av2", "sd_focus 2")
+		SD_VARIANT_ROW(3, sd_av_3, "sd_av3", "sd_focus 3")
+		SD_VARIANT_ROW(4, sd_av_4, "sd_av4", "sd_focus 4")
+		SD_VARIANT_ROW(5, sd_av_5, "sd_av5", "sd_focus 5")
+		SD_VARIANT_ROW(6, sd_av_6, "sd_av6", "sd_focus 6")
+		SD_VARIANT_ROW(7, sd_av_7, "sd_av7", "sd_focus 7")
+
+		MENU_CHOICE_HORIZONTAL_LINE_VIS(8, 1)
+		SD_BUTTON(8, sd_av_next, "NEXT PAGE  (" + dvarstring( "sd_av_page" ) + ")", execnow "sd_variants 1"; setfocus "sd_av_0"; execnow "sd_focus 0";, SD_NOP, "", when( dvarint( "sd_av_pages" ) > 1 ))
+		MENU_CHOICE_BUTTON_VIS(9, sd_av_back, "BACK", close self;, "", 1)
+
+		SD_HINT
+
+		// --- The panel: the variant in focus ----------------------------------------------------------------------
+		SD_RECT(PX, 28, PW, 356, HORIZONTAL_ALIGN_RIGHT, VERTICAL_ALIGN_TOP, 0, 0, 0, 0.7, 1)
+		SD_CARD("sd_f", (PX + 5), 30, 280, HORIZONTAL_ALIGN_RIGHT, VERTICAL_ALIGN_TOP, 1, 0, 1)
+
+		SD_MESSAGE
+	}
+}
