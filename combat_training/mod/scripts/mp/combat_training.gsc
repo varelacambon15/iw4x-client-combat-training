@@ -40,8 +40,10 @@ init()
 	setdvar( "bots_team_force", 1 );
 	setdvar( "bots_skill", 0 );
 
-	// Who joins first: most of the lobby, the rest over the first minutes (ct_matchmaking)
-	setdvar( "bots_manage_fill", int( level.ctPlayers * randomfloatrange( 0.6, 0.85 ) ) );
+	// The whole lobby from the start: every bot that joins makes the game stutter for a moment, so they all join
+	// during the countdown instead of over the first minute
+	setdvar( "bots_main_waitForHostTime", 1 );
+	setdvar( "bots_manage_fill", level.ctPlayers );
 
 	level thread ct_on_player_connect();
 	level thread ct_matchmaking();
@@ -244,7 +246,11 @@ ct_matchmaking()
 		setdvar( "bots_manage_fill", getdvarint( "bots_manage_fill" ) + 1 );
 	}
 
-	// Then, now and then, someone leaves and someone else joins in their place
+	// Then, now and then, someone leaves and someone else joins in their place (off by default: each join makes the
+	// game stutter for a moment; "set ct_bot_churn 1" in combat_training/user.cfg turns it on)
+	if ( getdvarint( "ct_bot_churn" ) != 1 )
+		return;
+
 	for ( ;; )
 	{
 		wait randomfloatrange( 90, 240 );
