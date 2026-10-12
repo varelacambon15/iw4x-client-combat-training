@@ -102,7 +102,7 @@
 			textalignx 4
 			textaligny 104
 			textscale 0.375
-			visible when ( isitemunlocked( localvarstring( "ui_selected_ref" ) ) )
+			visible when ( ( dvarint( "sd_owned_" + localvarstring( "ui_selected_ref" ) ) > 0 ) )
 			exp text ( "@" + tablelookup( "mp/statstable.csv" , 4 , localvarstring( "ui_selected_ref" ) , 7 ) )
 		}
 		itemDef
@@ -117,8 +117,8 @@
 			textalignx 4
 			textaligny 104
 			textscale 0.375
-			visible when ( !isitemunlocked( localvarstring( "ui_selected_ref" ) ) )
-			exp text ( "@" + tablelookup( "mp/rankTable.csv" , 0 , tablelookup( "mp/unlockTable.csv" , 0 , localvarstring( "ui_selected_ref" ) , 2 ) , 17 ) )
+			visible when ( !( dvarint( "sd_owned_" + localvarstring( "ui_selected_ref" ) ) > 0 ) )
+			exp text ( "Buy it in SUPPLY DROPS, WEAPONS STORE." )
 		}
 		itemDef
 		{
@@ -133,7 +133,7 @@
 			textaligny 144
 			textscale 0.375
 			text "@PLATFORM_VIEW_CHALLENGES"
-			visible when ( isitemunlocked( localvarstring( "ui_selected_ref" ) ) && ( tablelookup( "mp/challengeTable.csv" , 6 , localvarstring( "ui_selected_ref" ) , 4 ) ) != "" )
+			visible when ( ( dvarint( "sd_owned_" + localvarstring( "ui_selected_ref" ) ) > 0 ) && ( tablelookup( "mp/challengeTable.csv" , 6 , localvarstring( "ui_selected_ref" ) , 4 ) ) != "" )
 		}
 		itemDef
 		{

@@ -626,7 +626,7 @@
 			textalign 4 \
 			textalignx 68 \
 			textscale 0.375 \
-			disabled when ( dvarint( "sd_owned_" + weaponArg ) == 0 ) \
+			disabled when ( dvarint( "sd_owned_" + weaponArg ) == 0 || dvarint( "sd_store_cac" ) == 0 ) \
 			exp text ( "@" + tablelookup( "mp/statsTable.csv" , 4 , weaponArg , 3 ) ) \
 			execKeyInt 168 \
 			{ \
@@ -670,7 +670,6 @@
 					setPlayerData( "customClasses" , localVarInt ( "classIndex" ) , "weaponSetups" , 0 , "camo" , "none" ); \
 				} \
 				setPlayerData( "customClasses" , localVarInt ( "classIndex" ) , "weaponSetups" , 0 , "weapon" , weaponArg ); \
-				setPlayerData( "weaponNew" , weaponArg , "false" ); \
 				if ( !( tablelookup( "mp/attachmentTable.csv" , 4 , getplayerdata( "customClasses" , localvarint( "classIndex" ) , "weaponSetups" , 0 , "attachment" , 0 ) , 12 ) != "" || tablelookup( "mp/attachmentTable.csv" , 4 , getplayerdata( "customClasses" , localvarint( "classIndex" ) , "weaponSetups" , 1 , "attachment" , 0 ) , 12 ) != "" ) && ( getplayerdata( "customClasses" , localvarint( "classIndex" ) , "perks" , 0 ) == "specialty_null_gl" || getplayerdata( "customClasses" , localvarint( "classIndex" ) , "perks" , 0 ) == "specialty_null_grip" || getplayerdata( "customClasses" , localvarint( "classIndex" ) , "perks" , 0 ) == "specialty_null_shotgun" ) || getplayerdata( "customClasses" , localvarint( "classIndex" ) , "perks" , 0 ) == "specialty_null_heartbeat" ) \
 				{ \
 					setPlayerData( "customClasses" , localVarInt ( "classIndex" ) , "perks" , 0 , "specialty_null" ); \
@@ -726,7 +725,6 @@
 			{ \
 				setItemColor self backcolor 1 1 1 0; \
 				setLocalVarBool "ui_popupAButton" ( 0 ); \
-				setPlayerData( "weaponNew" , weaponArg , "false" ); \
 			} \
 		} \
 		itemDef \

@@ -58,6 +58,10 @@ namespace Components
     std::vector<AddedWeapon> AddedWeapons;
     bool AddedLoaded = false;
 
+    // The class data accepts the store weapons (the player data list was extended): only then can Create a Class
+    // save them (sd_store_cac)
+    std::atomic<bool> StoreClassReady = false;
+
     // ref | name | category | price | image | accuracy damage range firerate mobility
     void LoadAddedWeapons()
     {
@@ -819,6 +823,8 @@ namespace Components
         SetDvar(p + "_done", c->done ? 1 : 0);
       }
 
+      SetDvar("sd_store_cac", StoreClassReady ? 1 : 0);
+
       // Create a Class: a store weapon can be chosen once bought
       if (!AddedLoaded) LoadAddedWeapons();
       for (const auto& added : AddedWeapons)
@@ -1525,6 +1531,7 @@ namespace Components
 
       if (entries.empty())
       {
+        StoreClassReady = true; // already in the list
         return;
       }
       if (weapons->entryCount + static_cast<int>(entries.size()) > weapons->reservedEntryCount)
@@ -1535,6 +1542,7 @@ namespace Components
 
       StructuredData::PatchPlayerDataEnum(def, StructuredData::PlayerDataType::WEAPONS, entries);
       Logger::Print("Supply Drops: {} store weapons added to the class data\n", entries.size());
+      StoreClassReady = true;
     });
 
     Command::Add("sd_refresh", []
