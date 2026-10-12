@@ -21,8 +21,15 @@ price_drop = 250                   // Store
 price_advanced = 600
 
 // --- What comes out of a drop ---
-items_per_drop = 3                 // variants in each drop (1 to 3)
+items_per_drop = 3                 // items in each drop (1 to 3)
 bonus_credits_per_drop = 15
+chance_variant = 15                // chance (percent) that an item is a weapon variant; otherwise a cosmetic or a bonus
+chance_variant_advanced = 35       // in an Advanced drop (which always has one variant, Professional or better)
+weight_camo = 45                   // what the other items are: the next camo of a weapon...
+weight_cod_points = 30             // ...COD Points...
+weight_double_xp = 25              // ...or a Double XP match
+cod_points_min = 50
+cod_points_max = 150
 
 // Chance of each rarity, in percent. An Advanced drop always has one Professional or better.
 chance_elite = 8

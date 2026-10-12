@@ -45,9 +45,12 @@ cuál es la siguiente: el juego pasa de una a otra como en el online. Para dejar
 Lo nuevo frente a Combat Training, como en Advanced Warfare. Todo está en el menú principal, en **SUPPLY DROPS** (lleva
 el icono de "nuevo" cuando tienes cajas sin abrir):
 
-- **Abrir:** la caja se abre con su animación y salen tres variantes, la mejor al final, cada una en su tarjeta con la
-  foto del arma, la rareza (**Enlisted** verde, **Professional** azul, **Elite** dorada) y sus estadísticas: las barras
-  del juego con lo que la variante sube (verde) o baja (rojo), y la lista de cambios.
+- **Abrir:** la caja se abre con su animación y salen tres cosas, la mejor al final: sobre todo **camuflajes** (el
+  siguiente camuflaje de un arma, que queda desbloqueado en Crear una clase), partidas de **doble experiencia** y
+  **COD Points**; y de vez en cuando una **variante de arma** (a veces dos o tres). Las variantes salen en su tarjeta
+  con la foto del arma, la rareza (**Enlisted** verde, **Professional** azul, **Elite** dorada) y sus estadísticas: las
+  barras del juego con lo que la variante sube (verde) o baja (rojo), y la lista de cambios. Los camuflajes cuentan
+  como completado el nivel de su desafío de tiros a la cabeza (y su experiencia ya no se gana al jugar).
 - **Qué cambian:** daño (general, a corta o a larga distancia), daño en la cabeza, movilidad y munición de reserva. Más
   rareza, más ventajas; a veces con una desventaja. Las Advanced traen siempre una Professional o mejor.
 - **Armory:** tus armas con variantes; en cada una eliges cuál equipar o la desguazas (**Salvage**) por COD Points. También

@@ -277,6 +277,9 @@ namespace Components
         { "drawback_min_professional", 3 }, { "drawback_max_professional", 6 },
         { "drawback_min_elite", 3 }, { "drawback_max_elite", 6 },
         { "daily_contracts", 3 }, { "weekly_contract_advanced", 1 },
+        { "chance_variant", 15 }, { "chance_variant_advanced", 35 },
+        { "weight_camo", 45 }, { "weight_cod_points", 30 }, { "weight_double_xp", 25 },
+        { "cod_points_min", 50 }, { "cod_points_max", 150 },
       };
 
       FileSystem::File file("supply_drops/config.txt");
@@ -369,6 +372,9 @@ namespace Components
       std::vector<Contract> weekly;
       std::vector<Item> items;
       std::vector<std::string> owned;                       // added weapons bought
+      int xpTokens = 0;                                     // matches with double experience
+      std::unordered_map<std::string, int> camoState;       // camo challenge -> its state, as last seen in a match
+      std::unordered_map<std::string, int> camoTarget;      // camo challenge -> the state a drop gave (applied in the menus and in a match)
       std::unordered_map<std::string, std::string> replace; // stock weapon -> added weapon used in its place
     };
 
@@ -460,6 +466,15 @@ namespace Components
       for (const auto& ref : p.owned)
       {
         text += "owned=" + ref + "\n";
+      }
+      text += std::format("xptokens={}\n", p.xpTokens);
+      for (const auto& [ch, state] : p.camoState)
+      {
+        text += std::format("camo={}:{}\n", ch, state);
+      }
+      for (const auto& [ch, state] : p.camoTarget)
+      {
+        text += std::format("camogrant={}:{}\n", ch, state);
       }
       for (const auto& [base, added] : p.replace)
       {
@@ -557,6 +572,15 @@ namespace Components
           else if (key == "daily") Data.daily.emplace_back(ParseContract(value));
           else if (key == "weekly") Data.weekly.emplace_back(ParseContract(value));
           else if (key == "owned") Data.owned.emplace_back(value);
+          else if (key == "xptokens") Data.xpTokens = std::atoi(value.data());
+          else if (key == "camo" || key == "camogrant")
+          {
+            const auto colon = value.find(':');
+            if (colon != std::string::npos)
+            {
+              (key == "camo" ? Data.camoState : Data.camoTarget)[value.substr(0, colon)] = std::atoi(value.substr(colon + 1).data());
+            }
+          }
           else if (key == "replace")
           {
             const auto colon = value.find(':');
@@ -628,6 +652,47 @@ namespace Components
       });
 
       return list;
+    }
+
+    // ------------------------------------------------------------------------------------------------------------
+    // Camos: each stock weapon unlocks its camos through the tiers of its "expert" challenge (mp/unlocktable.csv:
+    // "m4 woodland,camo,0,ch_expert_m4", digital ch_expert_m4_2...). Camo k (1 Woodland .. 6 Fall) needs the
+    // challenge's state at k + 1.
+    // ------------------------------------------------------------------------------------------------------------
+
+    constexpr const char* CAMO_NAMES[] = { "Woodland", "Digital", "Red Urban", "Blue Tiger", "Red Tiger", "Fall" };
+    constexpr int CAMO_MAX_STATE = 7;
+
+    std::unordered_map<std::string, std::string> CamoChallenges; // weapon ref -> challenge
+    bool CamoLoaded = false;
+
+    void LoadCamoChallenges()
+    {
+      CamoLoaded = true;
+      CamoChallenges.clear();
+      FileSystem::File file("mp/unlocktable.csv");
+      if (!file.exists()) return;
+
+      for (auto& line : Utils::String::Split(file.getBuffer(), '\n'))
+      {
+        Utils::String::Replace(line, "\r", "");
+        const auto f = Utils::String::Split(line, ',');
+        if (f.size() < 4 || f[1] != "camo" || f[3].empty()) continue;
+        const auto space = f[0].find(' ');
+        if (space == std::string::npos || f[0].substr(space + 1) != "woodland") continue;
+        const auto ref = f[0].substr(0, space);
+        // the stock weapons only (IW4x's own extra weapons may not have their challenge in the player data)
+        static const std::unordered_set<std::string> extras = { "ak47classic", "ak74u", "peacekeeper", "m40a3", "dragunov" };
+        if (FindWeapon(ref) && !extras.contains(ref)) CamoChallenges[ref] = f[3];
+      }
+    }
+
+    int CamoStateOf(const std::string& ch)
+    {
+      int state = 1;
+      if (const auto it = Data.camoState.find(ch); it != Data.camoState.end()) state = std::max(state, it->second);
+      if (const auto it = Data.camoTarget.find(ch); it != Data.camoTarget.end()) state = std::max(state, it->second);
+      return state;
     }
 
     // ------------------------------------------------------------------------------------------------------------
@@ -722,6 +787,10 @@ namespace Components
     void PublishCard(const std::string& p, const Item* item, const std::string& ref)
     {
       const auto weaponRef = item ? item->base : ref;
+      SetDvar(p + "_bars", 1);
+      SetDvar(p + "_big", "");
+      SetDvar(p + "_ch", "");
+      SetDvar(p + "_chv", 0);
       SetDvar(p + "_ref", weaponRef);
       SetDvar(p + "_weapon", Utils::String::ToUpper(WeaponName(weaponRef)));
       PublishWeaponLook(p, weaponRef);
@@ -800,6 +869,7 @@ namespace Components
       SetDvar("sd_price_drop", Cfg("price_drop"));
       SetDvar("sd_price_adv", Cfg("price_advanced"));
       SetDvar("sd_next_drop", std::format("{} min", std::max(0, Cfg("minutes_per_drop") - Data.playtime)));
+      SetDvar("sd_xp_tokens", Data.xpTokens);
 
       std::vector<std::pair<const Contract*, bool>> contracts;
       for (const auto& c : Data.daily) contracts.emplace_back(&c, false);
@@ -910,6 +980,116 @@ namespace Components
       }
     }
 
+    // What comes out of a drop: mostly cosmetics and filler, now and then a weapon variant
+    struct Reward
+    {
+      enum Kind { VARIANT, CAMO, COD_POINTS, DOUBLE_XP } kind = COD_POINTS;
+      Item item;
+      std::string ref;   // camo: the weapon
+      std::string ch;    // camo: its challenge
+      int value = 0;     // camo: the state it reaches; COD Points: how many
+
+      [[nodiscard]] int Order() const // the best one last
+      {
+        if (kind == VARIANT) return 3 + RarityIndex(item.rarity);
+        if (kind == CAMO) return 2;
+        if (kind == DOUBLE_XP) return 1;
+        return 0;
+      }
+    };
+
+    Reward RollCosmetic()
+    {
+      if (!CamoLoaded) LoadCamoChallenges();
+      Reward reward;
+
+      const auto camo = std::max(0, Cfg("weight_camo"));
+      const auto cp = std::max(0, Cfg("weight_cod_points"));
+      const auto xp = std::max(0, Cfg("weight_double_xp"));
+      const auto roll = Random(0, std::max(1, camo + cp + xp) - 1);
+
+      if (roll < camo)
+      {
+        // The next camo of a weapon that still has some to unlock
+        std::vector<std::pair<std::string, std::string>> open;
+        for (const auto& [ref, ch] : CamoChallenges)
+        {
+          if (CamoStateOf(ch) < CAMO_MAX_STATE) open.emplace_back(ref, ch);
+        }
+        if (!open.empty())
+        {
+          const auto& [ref, ch] = open[Random(0, static_cast<int>(open.size()) - 1)];
+          reward.kind = Reward::CAMO;
+          reward.ref = ref;
+          reward.ch = ch;
+          reward.value = CamoStateOf(ch) + 1;
+          return reward;
+        }
+      }
+
+      if (roll >= camo + cp)
+      {
+        reward.kind = Reward::DOUBLE_XP;
+        reward.value = 1;
+        return reward;
+      }
+
+      reward.kind = Reward::COD_POINTS;
+      reward.value = Random(Cfg("cod_points_min"), std::max(Cfg("cod_points_min"), Cfg("cod_points_max")));
+      reward.value -= reward.value % 5;
+      return reward;
+    }
+
+    void PublishReward(const std::string& p, const Reward& reward)
+    {
+      if (reward.kind == Reward::VARIANT)
+      {
+        PublishCard(p, &reward.item, "");
+        return;
+      }
+
+      PublishCard(p, nullptr, reward.kind == Reward::CAMO ? reward.ref : "");
+      SetDvar(p + "_bars", 0);
+      for (int i = 1; i < 4; ++i)
+      {
+        SetDvar(std::format("{}_mod{}", p, i), "");
+      }
+
+      if (reward.kind == Reward::CAMO)
+      {
+        const auto camo = CAMO_NAMES[std::clamp(reward.value - 2, 0, 5)];
+        SetDvar(p + "_name", std::format("{} Camo", camo));
+        SetDvar(p + "_rname", "CAMO");
+        SetDvar(p + "_rarity", 1);
+        SetColorDvars(p, 1);
+        SetDvar(p + "_mod0", std::format("^2Unlocked^7 for the {} in Create a Class.", WeaponName(reward.ref)));
+        SetDvar(p + "_ch", reward.ch);
+        SetDvar(p + "_chv", reward.value);
+      }
+      else if (reward.kind == Reward::DOUBLE_XP)
+      {
+        SetDvar(p + "_img", "");
+        SetDvar(p + "_weapon", "BONUS");
+        SetDvar(p + "_name", "Double XP");
+        SetDvar(p + "_rname", "DOUBLE XP");
+        SetDvar(p + "_rarity", 2);
+        SetColorDvars(p, 2);
+        SetDvar(p + "_big", "2X XP");
+        SetDvar(p + "_mod0", "Your next match gives double experience.");
+      }
+      else
+      {
+        SetDvar(p + "_img", "");
+        SetDvar(p + "_weapon", "BONUS");
+        SetDvar(p + "_name", std::format("{} COD Points", reward.value));
+        SetDvar(p + "_rname", "COD POINTS");
+        SetDvar(p + "_rarity", 0);
+        SetColorDvars(p, 0);
+        SetDvar(p + "_big", std::format("+{} CP", reward.value));
+        SetDvar(p + "_mod0", "For the Store and the Weapons Store.");
+      }
+    }
+
     void OpenDrop(bool advanced)
     {
       Load();
@@ -921,52 +1101,66 @@ namespace Components
       }
       --count;
 
-      std::vector<Item> items;
+      std::vector<Reward> rewards;
       const auto amount = std::clamp(Cfg("items_per_drop"), 1, REVEAL_CARDS);
+      const auto variantChance = Cfg(advanced ? "chance_variant_advanced" : "chance_variant");
       for (int i = 0; i < amount; ++i)
       {
-        auto rarity = RollRarity(advanced);
-        if (advanced && i == 0 && rarity == "enlisted")
+        // An Advanced Supply Drop always has a variant, Professional or better
+        const auto variant = (advanced && i == 0) || Random(0, 99) < variantChance;
+        if (variant)
         {
-          rarity = "professional"; // an Advanced Supply Drop has one Professional or better
+          auto rarity = RollRarity(advanced);
+          if (advanced && i == 0 && rarity == "enlisted") rarity = "professional";
+          Reward reward;
+          reward.kind = Reward::VARIANT;
+          reward.item = NewVariant(rarity);
+          rewards.emplace_back(std::move(reward));
         }
-        items.emplace_back(NewVariant(rarity));
+        else
+        {
+          auto reward = RollCosmetic();
+          if (reward.kind == Reward::CAMO) Data.camoTarget[reward.ch] = reward.value; // so that the next one is the next camo
+          rewards.emplace_back(std::move(reward));
+        }
       }
 
-      // The best one last, as the big reveal
-      std::ranges::stable_sort(items, [](const Item& a, const Item& b) { return RarityIndex(a.rarity) < RarityIndex(b.rarity); });
+      std::ranges::stable_sort(rewards, [](const Reward& a, const Reward& b) { return a.Order() < b.Order(); });
 
       const auto bonus = Cfg("bonus_credits_per_drop");
       Data.credits += bonus;
 
-      int best = 0;
+      int best = -1;
       for (int i = 0; i < REVEAL_CARDS; ++i)
       {
         const auto p = std::format("sd_rv{}", i);
-        if (i < static_cast<int>(items.size()))
-        {
-          Data.items.emplace_back(items[i]);
-          PublishCard(p, &items[i], "");
-          SetDvar(p + "_on", 1);
-          best = std::max(best, RarityIndex(items[i].rarity));
-        }
-        else
+        if (i >= static_cast<int>(rewards.size()))
         {
           SetDvar(p + "_on", 0);
+          continue;
         }
+
+        const auto& reward = rewards[i];
+        switch (reward.kind)
+        {
+        case Reward::VARIANT: Data.items.emplace_back(reward.item); best = std::max(best, RarityIndex(reward.item.rarity)); break;
+        case Reward::CAMO: best = std::max(best, 1); break;
+        case Reward::DOUBLE_XP: ++Data.xpTokens; best = std::max(best, 0); break;
+        case Reward::COD_POINTS: Data.credits += reward.value; best = std::max(best, 0); break;
+        }
+        PublishReward(p, reward);
+        SetDvar(p + "_on", 1);
+        RevealElite[i] = reward.kind == Reward::VARIANT && reward.item.rarity == "elite";
       }
 
       Save();
 
-      for (int i = 0; i < REVEAL_CARDS; ++i)
-      {
-        RevealElite[i] = i < static_cast<int>(items.size()) && items[i].rarity == "elite";
-      }
-      StartReveal(static_cast<int>(items.size()));
+      StartReveal(static_cast<int>(rewards.size()));
       UpdateReveal();
 
+      best = std::max(best, 0);
       SetDvar("sd_rv_ok", 1);
-      SetDvar("sd_rv_count", static_cast<int>(items.size()));
+      SetDvar("sd_rv_count", static_cast<int>(rewards.size()));
       SetDvar("sd_rv_adv", advanced ? 1 : 0);
       SetDvar("sd_rv_title", advanced ? "ADVANCED SUPPLY DROP" : "SUPPLY DROP");
       SetDvar("sd_rv_best", best);
@@ -1373,6 +1567,50 @@ namespace Components
       {
         Load();
         Game::Scr_AddInt(Owns(Game::Scr_GetString(0)) ? 1 : 0);
+      });
+
+      GSC::Script::AddFunction("SDCamoChallenges", [] // gsc: SDCamoChallenges() -> "ch_expert_m4 ch_expert_famas ..."
+      {
+        Load();
+        if (!CamoLoaded) LoadCamoChallenges();
+        std::string text;
+        for (const auto& entry : CamoChallenges)
+        {
+          text += (text.empty() ? "" : " ") + entry.second;
+        }
+        Game::Scr_AddString(text.data());
+      });
+
+      GSC::Script::AddFunction("SDCamoTarget", [] // gsc: SDCamoTarget(<challenge>) -> the state a drop gave it (0 if none)
+      {
+        Load();
+        const auto it = Data.camoTarget.find(Game::Scr_GetString(0));
+        Game::Scr_AddInt(it == Data.camoTarget.end() ? 0 : it->second);
+      });
+
+      GSC::Script::AddFunction("SDCamoSync", [] // gsc: SDCamoSync(<challenge>, <its state now>)
+      {
+        Load();
+        Data.camoState[Game::Scr_GetString(0)] = Game::Scr_GetInt(1);
+      });
+
+      GSC::Script::AddFunction("SDSave", []
+      {
+        Load();
+        Save();
+      });
+
+      GSC::Script::AddFunction("SDUseDoubleXP", [] // gsc: SDUseDoubleXP() -> 1 when a Double XP match was used
+      {
+        Load();
+        auto used = 0;
+        if (Data.xpTokens > 0)
+        {
+          --Data.xpTokens;
+          used = 1;
+          Save();
+        }
+        Game::Scr_AddInt(used);
       });
 
       GSC::Script::AddFunction("SDAddedWeapons", [] // gsc: SDAddedWeapons() -> the installed added weapons, "hdr ax50 ..."

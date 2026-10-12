@@ -260,9 +260,50 @@ sd_player()
 	self.sdHuman = true;
 	self.sdLastPrestige = self maps\mp\gametypes\_rank::getPrestigeLevel();
 
+	self thread sd_camos();
+	self thread sd_double_xp();
 	self thread sd_watch_weapon();
 	self thread sd_watch_loadout();
-	self thread sd_watch_playtime();
+	self thread // The camos given by Supply Drops (their weapon's challenge moved on), and what the challenges are now, so that the
+// next drop gives the next camo
+sd_camos()
+{
+	self endon( "disconnect" );
+	self waittill( "spawned_player" );
+
+	foreach ( ch in strtok( sdcamochallenges(), " " ) )
+	{
+		state = self getplayerdata( "challengeState", ch );
+		target = sdcamotarget( ch );
+		if ( target > state )
+		{
+			self setplayerdata( "challengeState", ch, target );
+			state = target;
+		}
+		sdcamosync( ch, state );
+	}
+	sdsave();
+}
+
+// A Double XP match from a Supply Drop
+sd_double_xp()
+{
+	self endon( "disconnect" );
+	level endon( "game_ended" );
+
+	if ( !sdusedoublexp() )
+		return;
+
+	while ( !isdefined( level.xpScale ) )
+		wait 0.05;
+
+	level.xpScale = level.xpScale * 2;
+	self waittill( "spawned_player" );
+	wait 2;
+	self iprintlnbold( "^3Double XP^7 this match" );
+}
+
+sd_watch_playtime();
 	self thread sd_watch_rank();
 
 	self waittill( "spawned_player" );

@@ -12,6 +12,17 @@
 #define V(name)						dvarint( name )
 #define F(name)						( dvarint( name ) / 100.0 )
 
+// A camo from the drop: its weapon's challenge moves on (never back), so it is in Create a Class right away
+#define SD_GRANT(P) \
+	if ( dvarstring( P + "_ch" ) != "" ) \
+	{ \
+		if ( getplayerdata( "challengeState" , dvarstring( P + "_ch" ) ) < dvarint( P + "_chv" ) ) \
+		{ \
+			setPlayerData( "challengeState" , dvarstring( P + "_ch" ) , dvarint( P + "_chv" ) ); \
+		} \
+	}
+#define SD_GRANTS SD_GRANT("sd_rv0") SD_GRANT("sd_rv1") SD_GRANT("sd_rv2")
+
 #define CARD_W						180
 #define CARD_Y						(0 - 168)
 
@@ -50,6 +61,7 @@
 		{
 			setfocus "sd_rv_continue";
 			play "mp_level_up";
+			SD_GRANTS
 		}
 		onEsc
 		{
@@ -128,7 +140,7 @@
 
 		// --- Buttons: continue (skips the animation while it plays), open another of the same kind -----------------
 		SD_CENTER_BUTTON("sd_rv_continue", 176, "CONTINUE", if ( V( "sd_rv_done" ) == 0 ) { execnow "sd_reveal_skip"; } else { close self; }, 1)
-		SD_CENTER_BUTTON("sd_rv_again", 200, "OPEN ANOTHER", execnow "sd_open 0"; setfocus "sd_rv_continue";, when( V( "sd_rv_done" ) && V( "sd_rv_adv" ) == 0 && V( "sd_drops" ) > 0 ))
-		SD_CENTER_BUTTON("sd_rv_again_adv", 200, "OPEN ANOTHER", execnow "sd_open 1"; setfocus "sd_rv_continue";, when( V( "sd_rv_done" ) && V( "sd_rv_adv" ) == 1 && V( "sd_adv" ) > 0 ))
+		SD_CENTER_BUTTON("sd_rv_again", 200, "OPEN ANOTHER", execnow "sd_open 0"; SD_GRANTS setfocus "sd_rv_continue";, when( V( "sd_rv_done" ) && V( "sd_rv_adv" ) == 0 && V( "sd_drops" ) > 0 ))
+		SD_CENTER_BUTTON("sd_rv_again_adv", 200, "OPEN ANOTHER", execnow "sd_open 1"; SD_GRANTS setfocus "sd_rv_continue";, when( V( "sd_rv_done" ) && V( "sd_rv_adv" ) == 1 && V( "sd_adv" ) > 0 ))
 	}
 }

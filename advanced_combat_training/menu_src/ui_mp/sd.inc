@@ -255,9 +255,25 @@
 		style				WINDOW_STYLE_SHADER \
 		forecolor			1 1 1 1 \
 		decoration \
-		visible				visArg \
+		visible				when( dvarstring( P + "_img" ) != "" ) \
 		exp					material ( dvarstring( P + "_img" ) ) \
 		exp					rect y ( Y + 26 + DY ) \
+		exp					forecolor a ( A ) \
+	} \
+	itemDef \
+	{ \
+		rect				(X + 10) (Y + 26) (W - 20) SD_CARD_IH(W) ah av \
+		forecolor			1 1 1 1 \
+		textfont			9 \
+		textscale			0.8 \
+		textalign			ITEM_ALIGN_MIDDLE_CENTER \
+		decoration \
+		visible				when( dvarstring( P + "_img" ) == "" && dvarstring( P + "_big" ) != "" ) \
+		exp					text ( dvarstring( P + "_big" ) ) \
+		exp					rect y ( Y + 26 + DY ) \
+		exp					forecolor r ( SD_COLOR_R(P) ) \
+		exp					forecolor g ( SD_COLOR_G(P) ) \
+		exp					forecolor b ( SD_COLOR_B(P) ) \
 		exp					forecolor a ( A ) \
 	} \
 	itemDef \
@@ -289,12 +305,12 @@
 		exp					rect y ( Y + 52 + SD_CARD_IH(W) + DY ) \
 		exp					forecolor a ( 0.7 * ( A ) ) \
 	} \
-	SD_RECT((X + 10), (Y + 70 + SD_CARD_IH(W)), (W - 20), 1, ah, av, 1, 1, 1, 0.15, visArg) \
-	SD_BAR(P, (X + 10), (Y + 76 + SD_CARD_IH(W)), (W - 98), ah, av, "ACCURACY", "_s0", 0, A, DY, visArg) \
-	SD_BAR(P, (X + 10), (Y + 92 + SD_CARD_IH(W)), (W - 98), ah, av, "DAMAGE", "_s1", dvarint( P + "_ddmg" ), A, DY, visArg) \
-	SD_BAR(P, (X + 10), (Y + 108 + SD_CARD_IH(W)), (W - 98), ah, av, "RANGE", "_s2", dvarint( P + "_drng" ), A, DY, visArg) \
-	SD_BAR(P, (X + 10), (Y + 124 + SD_CARD_IH(W)), (W - 98), ah, av, "FIRE RATE", "_s3", 0, A, DY, visArg) \
-	SD_BAR(P, (X + 10), (Y + 140 + SD_CARD_IH(W)), (W - 98), ah, av, "MOBILITY", "_s4", dvarint( P + "_dmob" ), A, DY, visArg) \
+	SD_RECT((X + 10), (Y + 70 + SD_CARD_IH(W)), (W - 20), 1, ah, av, 1, 1, 1, 0.15, when( dvarint( P + "_bars" ) )) \
+	SD_BAR(P, (X + 10), (Y + 76 + SD_CARD_IH(W)), (W - 98), ah, av, "ACCURACY", "_s0", 0, A, DY, when( dvarint( P + "_bars" ) )) \
+	SD_BAR(P, (X + 10), (Y + 92 + SD_CARD_IH(W)), (W - 98), ah, av, "DAMAGE", "_s1", dvarint( P + "_ddmg" ), A, DY, when( dvarint( P + "_bars" ) )) \
+	SD_BAR(P, (X + 10), (Y + 108 + SD_CARD_IH(W)), (W - 98), ah, av, "RANGE", "_s2", dvarint( P + "_drng" ), A, DY, when( dvarint( P + "_bars" ) )) \
+	SD_BAR(P, (X + 10), (Y + 124 + SD_CARD_IH(W)), (W - 98), ah, av, "FIRE RATE", "_s3", 0, A, DY, when( dvarint( P + "_bars" ) )) \
+	SD_BAR(P, (X + 10), (Y + 140 + SD_CARD_IH(W)), (W - 98), ah, av, "MOBILITY", "_s4", dvarint( P + "_dmob" ), A, DY, when( dvarint( P + "_bars" ) )) \
 	SD_RECT((X + 10), (Y + 158 + SD_CARD_IH(W)), (W - 20), 1, ah, av, 1, 1, 1, 0.15, visArg) \
 	SD_CARD_MOD(P, "_mod0", X, (Y + 162 + SD_CARD_IH(W)), W, ah, av, A, DY, visArg) \
 	SD_CARD_MOD(P, "_mod1", X, (Y + 176 + SD_CARD_IH(W)), W, ah, av, A, DY, visArg) \

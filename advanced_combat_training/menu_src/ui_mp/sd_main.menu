@@ -81,8 +81,8 @@
 
 		MENU_CHOICE_TITLE_VIS(MENU_TITLE, 58, 1)
 
-		SD_BUTTON(0, sd_open, "OPEN SUPPLY DROP  (" + dvarint( "sd_drops" ) + ")", if ( dvarint( "sd_drops" ) > 0 ) { execnow "sd_open 0"; open sd_reveal; } else { setdvar sd_msg "^1No Supply Drops to open."; }, SD_NOP, "Weapon variants and COD Points. Earn more by playing, every 5 levels and by completing contracts.", 1)
-		SD_BUTTON(1, sd_open_adv, "OPEN ADVANCED SUPPLY DROP  (" + dvarint( "sd_adv" ) + ")", if ( dvarint( "sd_adv" ) > 0 ) { execnow "sd_open 1"; open sd_reveal; } else { setdvar sd_msg "^1No Advanced Supply Drops to open."; }, SD_NOP, "Better odds: at least one Professional or Elite variant. Earned by prestige and weekly contracts.", 1)
+		SD_BUTTON(0, sd_open, "OPEN SUPPLY DROP  (" + dvarint( "sd_drops" ) + ")", if ( dvarint( "sd_drops" ) > 0 ) { execnow "sd_open 0"; open sd_reveal; } else { setdvar sd_msg "^1No Supply Drops to open."; }, SD_NOP, "Camos, Double XP, COD Points and now and then a weapon variant. Earn more by playing, every 5 levels and by completing contracts.", 1)
+		SD_BUTTON(1, sd_open_adv, "OPEN ADVANCED SUPPLY DROP  (" + dvarint( "sd_adv" ) + ")", if ( dvarint( "sd_adv" ) > 0 ) { execnow "sd_open 1"; open sd_reveal; } else { setdvar sd_msg "^1No Advanced Supply Drops to open."; }, SD_NOP, "Always a Professional or Elite weapon variant, and better odds. Earned by prestige and weekly contracts.", 1)
 
 		MENU_CHOICE_HORIZONTAL_LINE_VIS(2, 1)
 		SD_BUTTON(2, sd_armory, "ARMORY  (" + dvarint( "sd_items" ) + ")", execnow "sd_armory"; open sd_armory;, SD_NOP, "Your variants: equip one for each weapon, or salvage them for COD Points.", 1)
@@ -110,7 +110,7 @@
 		SD_TILE((PX + 192), dvarint( "sd_credits" ), "COD POINTS", 0.35, 0.75, 1)
 		SD_TEXT((PX + 192), 56, 92, 30, HORIZONTAL_ALIGN_RIGHT, VERTICAL_ALIGN_TOP, 9, 0.55, ITEM_ALIGN_TOP_CENTER, 0.35, 0.75, 1, 0.9, "CP", 1)
 
-		SD_TEXT((PX + 10), 144, (PW - 20), 12, HORIZONTAL_ALIGN_RIGHT, VERTICAL_ALIGN_TOP, UI_FONT_SMALL, 0.26, ITEM_ALIGN_TOP_LEFT, 1, 1, 1, 0.55, "Next Supply Drop in " + dvarstring( "sd_next_drop" ) + " of play", 1)
+		SD_TEXT((PX + 10), 144, (PW - 20), 12, HORIZONTAL_ALIGN_RIGHT, VERTICAL_ALIGN_TOP, UI_FONT_SMALL, 0.26, ITEM_ALIGN_TOP_LEFT, 1, 1, 1, 0.55, "Next Supply Drop in " + dvarstring( "sd_next_drop" ) + " of play      ^3Double XP matches: " + dvarint( "sd_xp_tokens" ), 1)
 
 		SD_RECT((PX + 10), 160, (PW - 20), 1, HORIZONTAL_ALIGN_RIGHT, VERTICAL_ALIGN_TOP, 1, 1, 1, 0.2, 1)
 		SD_TEXT((PX + 10), 162, (PW - 20), 14, HORIZONTAL_ALIGN_RIGHT, VERTICAL_ALIGN_TOP, UI_FONT_SMALL, 0.3, ITEM_ALIGN_TOP_LEFT, 1, 1, 1, 0.6, "CONTRACTS", 1)
