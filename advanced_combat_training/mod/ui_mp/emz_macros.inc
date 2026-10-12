@@ -734,17 +734,6 @@
 			decoration \
 			visible 1 \
 			forecolor 1 1 1 1 \
-			background "specialty_new" \
-			textscale 0.55 \
-			visible 0 \
-		} \
-		itemDef \
-		{ \
-			rect 162 (4 + (itemNum*20)) 40 20 1 1 \
-			style 3 \
-			decoration \
-			visible 1 \
-			forecolor 1 1 1 1 \
 			background "specialty_locked" \
 			textscale 0.55 \
 			visible when ( dvarint( "sd_owned_" + weaponArg ) == 0 ) \
