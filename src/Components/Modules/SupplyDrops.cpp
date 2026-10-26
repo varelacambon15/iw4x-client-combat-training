@@ -1065,6 +1065,10 @@ namespace Components
         SetDvar(p + "_mod0", std::format("^2Unlocked^7 for the {} in Create a Class.", WeaponName(reward.ref)));
         SetDvar(p + "_ch", reward.ch);
         SetDvar(p + "_chv", reward.value);
+
+        // The camo is in Create a Class right away: the weapon's challenge moves on (never back, the value is always
+        // past the last state seen). The menus' own setPlayerData only takes fixed values, the console command does not
+        Command::Execute(std::format("setPlayerData challengeState {} {}", reward.ch, reward.value), false);
       }
       else if (reward.kind == Reward::DOUBLE_XP)
       {
