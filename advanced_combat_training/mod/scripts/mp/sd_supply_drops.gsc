@@ -264,7 +264,17 @@ sd_player()
 	self thread sd_double_xp();
 	self thread sd_watch_weapon();
 	self thread sd_watch_loadout();
-	self thread // The camos given by Supply Drops (their weapon's challenge moved on), and what the challenges are now, so that the
+	self thread sd_watch_playtime();
+	self thread sd_watch_rank();
+
+	self waittill( "spawned_player" );
+	wait 4;
+	total = sdcount();
+	if ( total > 0 )
+		self iprintln( "^3Supply Drops:^7 " + total + " waiting in the main menu" );
+}
+
+// The camos given by Supply Drops (their weapon's challenge moved on), and what the challenges are now, so that the
 // next drop gives the next camo
 sd_camos()
 {
@@ -301,16 +311,6 @@ sd_double_xp()
 	self waittill( "spawned_player" );
 	wait 2;
 	self iprintlnbold( "^3Double XP^7 this match" );
-}
-
-sd_watch_playtime();
-	self thread sd_watch_rank();
-
-	self waittill( "spawned_player" );
-	wait 4;
-	total = sdcount();
-	if ( total > 0 )
-		self iprintln( "^3Supply Drops:^7 " + total + " waiting in the main menu" );
 }
 
 sd_watch_playtime()
